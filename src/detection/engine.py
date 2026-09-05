@@ -55,12 +55,7 @@ class ContradictionEngine:
             resolved = [p if isinstance(p, Post) else Post.from_dict(p) for p in posts]
             return filter_posts(resolved, user_ids=user_ids, platforms=platforms)
         if elastic.is_configured():
-            try:
-                fetched = elastic.fetch_posts(user_ids, platforms=platforms)
-                if fetched:
-                    return fetched
-            except Exception:
-                pass
+            return elastic.fetch_posts(user_ids, platforms=platforms)
         return filter_posts(load_posts_json(SAMPLE_DATA_PATH), user_ids=user_ids, platforms=platforms)
 
     def analyze_users(
@@ -83,7 +78,12 @@ class ContradictionEngine:
             user_posts = by_user.get(str(user_id), [])
             pairs = self.candidates.build(user_posts)
             predictions = self.predictor.predict_pairs(pairs)
-            contradictory = [p for p in predictions if p["contradiction_score"] >= pair_threshold]
+            contradictory = [
+                p
+                for p in predictions
+                if p["contradiction_score"] >= pair_threshold
+                and str(p["label"]).lower() in {"contradiction", "contradicts", "contradict", "c"}
+            ]
             score = _user_score(predictions, pair_threshold)
             results.append(
                 {

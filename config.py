@@ -16,6 +16,10 @@ LABELED_DATA_DIR = DATA_DIR / "labeled"
 MODELS_DIR = BASE_DIR / "models"
 SAVED_MODELS_DIR = MODELS_DIR / "saved"
 BEST_MODEL_DIR = Path(os.getenv("MODEL_DIR") or SAVED_MODELS_DIR / "best_model")
+FALLBACK_MODEL = os.getenv(
+    "FALLBACK_MODEL",
+    "persiannlp/parsbert-base-parsinlu-entailment",
+)
 CHECKPOINTS_DIR = MODELS_DIR / "checkpoints"
 LOGS_DIR = BASE_DIR / "logs"
 FARSTAIL_DIR = RAW_DATA_DIR / "farstail"
@@ -23,17 +27,27 @@ FARSTAIL_DIR = RAW_DATA_DIR / "farstail"
 PLATFORMS = ("twitter", "telegram", "instagram")
 
 ES_CONFIG = {
-    "enabled": os.getenv("ES_ENABLED", "false").lower() in {"1", "true", "yes"},
-    "hosts": [h.strip() for h in os.getenv("ES_HOSTS", "http://localhost:9200").split(",") if h.strip()],
-    "index": os.getenv("ES_INDEX", "posts"),
+    "enabled": os.getenv("ES_ENABLED", "true").lower() in {"1", "true", "yes"},
+    "auth": os.getenv("ELASTIC_AUTH", os.getenv("ES_AUTH", "1")).strip() or "1",
+    "hosts": [h.strip() for h in os.getenv("ES_HOSTS", "https://elastic.synappse.ir").split(",") if h.strip()],
+    "index": os.getenv("ES_INDEX", "twitter_temp_data"),
     "user": os.getenv("ES_USER", ""),
     "password": os.getenv("ES_PASSWORD", ""),
     "api_key": os.getenv("ES_API_KEY", ""),
+    "verify_certs": os.getenv("ES_VERIFY_CERTS", "true").lower() not in {"0", "false", "no"},
+    "start_date": os.getenv("ES_START_DATE", os.getenv("START_DATE", "")),
+    "end_date": os.getenv("ES_END_DATE", os.getenv("END_DATE", "")),
+    "max_posts_per_user": int(os.getenv("ES_MAX_POSTS_PER_USER", "15")),
+    "reference_types": [
+        t.strip()
+        for t in os.getenv("ES_REFERENCE_TYPES", "post,tweet,original").split(",")
+        if t.strip()
+    ],
     "fields": {
-        "user_id": os.getenv("ES_FIELD_USER_ID", "user_id"),
-        "text": os.getenv("ES_FIELD_TEXT", "text"),
+        "user_id": os.getenv("ES_FIELD_USER_ID", "user_name"),
+        "text": os.getenv("ES_FIELD_TEXT", "normalized_text"),
         "platform": os.getenv("ES_FIELD_PLATFORM", "platform"),
-        "timestamp": os.getenv("ES_FIELD_TIMESTAMP", "timestamp"),
+        "timestamp": os.getenv("ES_FIELD_TIMESTAMP", "date"),
         "post_id": os.getenv("ES_FIELD_POST_ID", "post_id"),
     },
 }
