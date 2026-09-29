@@ -1,0 +1,33 @@
+{
+  "source": "FarsTail test",
+  "target_accuracy": 0.85,
+  "meets_target": false,
+  "gap_to_target": 0.0348,
+  "model_dir": "/Users/mahdi/PythonProjects/contra-detect/models/saved/best_model",
+  "validation": {
+    "eval_loss": 0.5744,
+    "eval_accuracy": 0.8211,
+    "eval_f1": 0.8185,
+    "eval_precision": 0.822,
+    "eval_recall": 0.8196,
+    "eval_f1_contradiction": 0.7447,
+    "eval_runtime": 77.2772,
+    "eval_samples_per_second": 19.889,
+    "eval_steps_per_second": 2.498,
+    "epoch": 3.0
+  },
+  "test": {
+    "eval_loss": 0.5858,
+    "eval_model_preparation_time": 0.0,
+    "eval_accuracy": 0.8152,
+    "eval_f1": 0.8127,
+    "eval_precision": 0.8157,
+    "eval_recall": 0.8141,
+    "eval_f1_contradiction": 0.7314,
+    "eval_runtime": 77.8462,
+    "eval_samples_per_second": 20.091,
+    "eval_steps_per_second": 1.259,
+    "epoch": 0
+  },
+  "note": "Accuracy is reported on FarsTail test, not on unlabeled social-media posts."
+}

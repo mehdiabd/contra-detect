@@ -16,3 +16,4 @@ models/checkpoints/
 data/raw/
 data/processed/
 data/labeled/
+*.log

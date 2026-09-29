@@ -48,6 +48,48 @@
       "post_id": "t3",
       "timestamp": "2024-02-14T16:40:00Z",
       "text": "برای کاهش آلودگی بهتر است استفاده از خودروهای شخصی محدود شود."
+    },
+    {
+      "user_id": "tw_nima",
+      "platform": "twitter",
+      "post_id": "tw1",
+      "timestamp": "2024-04-01T10:00:00Z",
+      "text": "فیلترینگ اینترنت کاملاً لازم است و امنیت کشور را بالا می‌برد."
+    },
+    {
+      "user_id": "tw_nima",
+      "platform": "twitter",
+      "post_id": "tw2",
+      "timestamp": "2024-08-12T15:30:00Z",
+      "text": "فیلترینگ اینترنت اشتباه است و فقط کسب‌وکارها را نابود می‌کند."
+    },
+    {
+      "user_id": "tg_maryam",
+      "platform": "telegram",
+      "post_id": "tg1",
+      "timestamp": "2024-03-05T09:00:00Z",
+      "text": "افزایش قیمت بنزین اجتناب‌ناپذیر و به نفع اقتصاد است."
+    },
+    {
+      "user_id": "tg_maryam",
+      "platform": "telegram",
+      "post_id": "tg2",
+      "timestamp": "2024-07-18T20:10:00Z",
+      "text": "افزایش قیمت بنزین ظلم به مردم است و من کاملاً مخالفم."
+    },
+    {
+      "user_id": "ig_kamran",
+      "platform": "instagram",
+      "post_id": "ig1",
+      "timestamp": "2024-01-20T12:00:00Z",
+      "text": "قیمت دلار تا پایان سال نصف می‌شود."
+    },
+    {
+      "user_id": "ig_kamran",
+      "platform": "instagram",
+      "post_id": "ig2",
+      "timestamp": "2024-09-01T18:40:00Z",
+      "text": "قیمت دلار تا پایان سال دو برابر می‌شود."
     }
   ]
 }

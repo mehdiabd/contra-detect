@@ -1,0 +1,36 @@
+{
+  "source": "FarsTail test",
+  "models": [
+    {
+      "model": "models/saved/best_model",
+      "metrics": {
+        "accuracy": 0.8043,
+        "f1": 0.8016,
+        "precision": 0.8041,
+        "recall": 0.8031,
+        "f1_contradiction": 0.7199
+      }
+    },
+    {
+      "model": "persiannlp/parsbert-base-parsinlu-entailment",
+      "metrics": {
+        "accuracy": 0.7992,
+        "f1": 0.7988,
+        "precision": 0.7996,
+        "recall": 0.7984,
+        "f1_contradiction": 0.7335
+      }
+    }
+  ],
+  "ensemble": {
+    "accuracy": 0.8191,
+    "f1": 0.8178,
+    "precision": 0.8185,
+    "recall": 0.818,
+    "f1_contradiction": 0.7473
+  },
+  "target_accuracy": 0.85,
+  "meets_target": false,
+  "gap_to_target": 0.0309,
+  "method": "mean softmax"
+}

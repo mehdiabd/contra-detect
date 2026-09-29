@@ -1,0 +1,69 @@
+{
+  "source": "FarsTail",
+  "citation": "https://github.com/dml-qom/FarsTail",
+  "role": "official labeled training/evaluation set for CONTRA-Detect",
+  "note": "Social-media posts from Elasticsearch are unlabeled inference data, not the gold test set.",
+  "splits": {
+    "train": {
+      "count": 7266,
+      "unlabeled": 0,
+      "labels": {
+        "entailment": 2429,
+        "contradiction": 2389,
+        "neutral": 2448
+      },
+      "balance": {
+        "entailment": 0.3343,
+        "contradiction": 0.3288,
+        "neutral": 0.3369
+      }
+    },
+    "val": {
+      "count": 1537,
+      "unlabeled": 0,
+      "labels": {
+        "entailment": 515,
+        "contradiction": 499,
+        "neutral": 523
+      },
+      "balance": {
+        "entailment": 0.3351,
+        "contradiction": 0.3247,
+        "neutral": 0.3403
+      }
+    },
+    "test": {
+      "count": 1564,
+      "unlabeled": 0,
+      "labels": {
+        "contradiction": 510,
+        "neutral": 535,
+        "entailment": 519
+      },
+      "balance": {
+        "contradiction": 0.3261,
+        "neutral": 0.3421,
+        "entailment": 0.3318
+      }
+    }
+  },
+  "total": {
+    "count": 10367,
+    "unlabeled": 0,
+    "labels": {
+      "entailment": 3463,
+      "contradiction": 3398,
+      "neutral": 3506
+    },
+    "balance": {
+      "entailment": 0.334,
+      "contradiction": 0.3278,
+      "neutral": 0.3382
+    }
+  },
+  "files": {
+    "train": "/Users/mahdi/PythonProjects/contra-detect/data/raw/farstail/train.csv",
+    "val": "/Users/mahdi/PythonProjects/contra-detect/data/raw/farstail/val.csv",
+    "test": "/Users/mahdi/PythonProjects/contra-detect/data/raw/farstail/test.csv"
+  }
+}
