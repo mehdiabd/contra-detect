@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import date
 from typing import Iterable, Optional, Sequence
 
 from config import CONTRADICTION_THRESHOLDS, SAMPLE_DATA_PATH
@@ -50,16 +51,35 @@ class ContradictionEngine:
         user_ids: Sequence[str],
         platforms: Optional[Iterable[str]] = None,
         posts: Optional[Sequence[Post]] = None,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
     ) -> list[Post]:
-        if posts:
+        if posts is not None:
             resolved = [p if isinstance(p, Post) else Post.from_dict(p) for p in posts]
-            return filter_posts(resolved, user_ids=user_ids, platforms=platforms)
-        sample = filter_posts(load_posts_json(SAMPLE_DATA_PATH), user_ids=user_ids, platforms=platforms)
+            return filter_posts(
+                resolved,
+                user_ids=user_ids,
+                platforms=platforms,
+                start_date=start_date,
+                end_date=end_date,
+            )
+        sample = filter_posts(
+            load_posts_json(SAMPLE_DATA_PATH),
+            user_ids=user_ids,
+            platforms=platforms,
+            start_date=start_date,
+            end_date=end_date,
+        )
         wanted = {str(u) for u in user_ids}
         if wanted and wanted.issubset({p.user_id for p in sample}):
             return sample
         if elastic.is_configured():
-            return elastic.fetch_posts(user_ids, platforms=platforms)
+            return elastic.fetch_posts(
+                user_ids,
+                platforms=platforms,
+                start_date=start_date,
+                end_date=end_date,
+            )
         return sample
 
     def analyze_users(
@@ -67,18 +87,41 @@ class ContradictionEngine:
         user_ids: Sequence[str],
         platforms: Optional[Iterable[str]] = None,
         posts: Optional[Sequence[Post]] = None,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
+        top_limit: int = 10,
+        top_candidate_limit: int = 30,
         pair_threshold: float = CONTRADICTION_THRESHOLDS["pair"],
         user_threshold: float = CONTRADICTION_THRESHOLDS["user"],
     ) -> list[dict]:
         if self.predictor is None:
             self.predictor = ContradictionPredictor()
-        posts = self.resolve_posts(user_ids, platforms=platforms, posts=posts)
+        requested_user_ids = [str(user_id) for user_id in user_ids]
+        top_mode = not requested_user_ids
+        if top_mode and posts is None and elastic.is_configured():
+            requested_user_ids = elastic.fetch_active_users(
+                limit=top_candidate_limit,
+                min_posts=2,
+                platforms=platforms,
+                start_date=start_date,
+                end_date=end_date,
+            )
+
+        posts = self.resolve_posts(
+            requested_user_ids,
+            platforms=platforms,
+            posts=posts,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        if top_mode and not requested_user_ids:
+            requested_user_ids = sorted({post.user_id for post in posts})
         by_user: dict[str, list[Post]] = defaultdict(list)
         for post in posts:
             by_user[post.user_id].append(post)
 
         results = []
-        for user_id in user_ids:
+        for user_id in requested_user_ids:
             user_posts = by_user.get(str(user_id), [])
             pairs = self.candidates.build(user_posts)
             predictions = self.predictor.predict_pairs(pairs)
@@ -88,6 +131,7 @@ class ContradictionEngine:
                 if p["contradiction_score"] >= pair_threshold
                 and str(p["label"]).lower() in {"contradiction", "contradicts", "contradict", "c"}
             ]
+            contradictory.sort(key=lambda pred: pred["contradiction_score"], reverse=True)
             score = _user_score(predictions, pair_threshold)
             results.append(
                 {
@@ -99,6 +143,19 @@ class ContradictionEngine:
                     "contradictory_posts": [_serialize_hit(p) for p in contradictory],
                 }
             )
+        if top_mode:
+            results = [row for row in results if row["contradictory_posts"]]
+            results.sort(
+                key=lambda row: (
+                    row["score"],
+                    max(
+                        (hit["contradiction_score"] for hit in row["contradictory_posts"]),
+                        default=0.0,
+                    ),
+                ),
+                reverse=True,
+            )
+            return results[:top_limit]
         return results
 
 

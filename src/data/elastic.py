@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Any, Iterable, Optional
 
 import requests
@@ -175,9 +176,17 @@ def _source_to_post(doc_id: str, source: dict, platform: str) -> Optional[Post]:
     )
 
 
-def _date_filter(platform: str) -> Optional[dict]:
-    start = (ES_CONFIG.get("start_date") or "").strip()
-    end = (ES_CONFIG.get("end_date") or "").strip()
+def _date_filter(
+    platform: str,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+) -> Optional[dict]:
+    if start_date is None and end_date is None:
+        start = (ES_CONFIG.get("start_date") or "").strip()
+        end = (ES_CONFIG.get("end_date") or "").strip()
+    else:
+        start = start_date.isoformat() if start_date else ""
+        end = end_date.isoformat() if end_date else ""
     if not start and not end:
         return None
     rng: dict[str, str] = {"format": "yyyy-MM-dd"}
@@ -217,11 +226,16 @@ def _is_source_catalog(index: str) -> bool:
     return any(name.endswith(suffix) for suffix in SOURCE_INDEX_SUFFIXES)
 
 
-def _base_filters(platform: str, user_ids: Optional[Iterable[str]] = None) -> list[dict]:
+def _base_filters(
+    platform: str,
+    user_ids: Optional[Iterable[str]] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+) -> list[dict]:
     filters: list[dict] = [_text_exists_filter()]
     if platform == "twitter" and REFERENCE_TYPES:
         filters.append({"terms": {"type": list(REFERENCE_TYPES)}})
-    date_filter = _date_filter(platform)
+    date_filter = _date_filter(platform, start_date=start_date, end_date=end_date)
     if date_filter:
         filters.append(date_filter)
     user_filter = _user_terms_filter(platform, user_ids or [])
@@ -249,6 +263,8 @@ def fetch_active_users_by_platform(
     per_platform: int = 1,
     min_posts: int = 6,
     platforms: Optional[Iterable[str]] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
 ) -> dict[str, list[str]]:
     """Return active users grouped so every configured platform can appear in output."""
     last_error = None
@@ -261,7 +277,15 @@ def fetch_active_users_by_platform(
             for field in _user_field_candidates(platform):
                 body = {
                     "size": 0,
-                    "query": {"bool": {"filter": _base_filters(platform)}},
+                    "query": {
+                        "bool": {
+                            "filter": _base_filters(
+                                platform,
+                                start_date=start_date,
+                                end_date=end_date,
+                            )
+                        }
+                    },
                     "aggs": {
                         "users": {
                             "terms": {
@@ -293,10 +317,22 @@ def fetch_active_users_by_platform(
     return by_platform
 
 
-def fetch_active_users(limit: int = 5, min_posts: int = 6, platforms: Optional[Iterable[str]] = None) -> list[str]:
+def fetch_active_users(
+    limit: int = 5,
+    min_posts: int = 6,
+    platforms: Optional[Iterable[str]] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+) -> list[str]:
     indexes = configured_indexes(platforms)
     per_platform = max(1, (limit + max(len(indexes), 1) - 1) // max(len(indexes), 1))
-    grouped = fetch_active_users_by_platform(per_platform=per_platform, min_posts=min_posts, platforms=platforms)
+    grouped = fetch_active_users_by_platform(
+        per_platform=per_platform,
+        min_posts=min_posts,
+        platforms=platforms,
+        start_date=start_date,
+        end_date=end_date,
+    )
     seen: list[str] = []
     for names in grouped.values():
         for user in names:
@@ -313,12 +349,23 @@ def _fetch_from_index(
     user_ids: list[str],
     per_user: int,
     size: int,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
 ) -> list[Post]:
     fields = _fields_for(platform)
     fetch_size = min(size, max(len(user_ids) * per_user, 10))
     body = {
         "size": fetch_size,
-        "query": {"bool": {"filter": _base_filters(platform, user_ids)}},
+        "query": {
+            "bool": {
+                "filter": _base_filters(
+                    platform,
+                    user_ids,
+                    start_date=start_date,
+                    end_date=end_date,
+                )
+            }
+        },
         "_source": [
             fields["user_id"],
             fields["text"],
@@ -360,6 +407,8 @@ def fetch_posts(
     user_ids: Iterable[str],
     platforms: Optional[Iterable[str]] = None,
     size: int = 5000,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
 ) -> list[Post]:
     user_ids = [str(u).lstrip("@") for u in user_ids if str(u).strip()]
     if not user_ids:
@@ -377,7 +426,17 @@ def fetch_posts(
             if _is_source_catalog(index):
                 continue
             try:
-                posts.extend(_fetch_from_index(platform, index, user_ids, per_user, remaining))
+                posts.extend(
+                    _fetch_from_index(
+                        platform,
+                        index,
+                        user_ids,
+                        per_user,
+                        remaining,
+                        start_date=start_date,
+                        end_date=end_date,
+                    )
+                )
             except Exception:
                 continue
             remaining = size - len(posts)

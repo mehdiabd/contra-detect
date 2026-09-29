@@ -1,13 +1,14 @@
+from datetime import date
 from functools import lru_cache
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 
-from config import API_CONFIG, PLATFORMS
+from config import API_CONFIG
 from src.data import elastic
-from src.data.schema import Post
+from src.data.schema import Post, normalize_platform
 from src.detection.engine import ContradictionEngine
 from src.models.predictor import ContradictionPredictor, resolve_model_source
 
@@ -23,15 +24,37 @@ app = FastAPI(
 class PostIn(BaseModel):
     user_id: str
     text: str
-    platform: str = "twitter"
+    platform: Optional[str] = None
     post_id: str = ""
     timestamp: Optional[str] = None
 
 
+class DateRange(BaseModel):
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+
+    @model_validator(mode="after")
+    def validate_order(self):
+        if self.start_date and self.end_date and self.start_date > self.end_date:
+            raise ValueError("start_date must be before or equal to end_date")
+        return self
+
+
 class AnalyzeRequest(BaseModel):
     user_ids: list[str] = Field(default_factory=list)
-    platforms: Optional[list[str]] = None
+    platform_name: str
+    date_range: Optional[DateRange] = None
     posts: Optional[list[PostIn]] = None
+
+    @field_validator("platform_name")
+    @classmethod
+    def validate_platform(cls, value: str) -> str:
+        return normalize_platform(value)
+
+    @field_validator("user_ids")
+    @classmethod
+    def normalize_user_ids(cls, values: list[str]) -> list[str]:
+        return list(dict.fromkeys(str(value).strip().lstrip("@") for value in values if str(value).strip()))
 
 
 @lru_cache(maxsize=1)
@@ -47,21 +70,27 @@ def warmup_model() -> None:
 
 
 def _resolve_user_ids(req: AnalyzeRequest) -> list[str]:
-    if req.user_ids:
-        return [u.lstrip("@") for u in req.user_ids]
-    if req.posts:
-        return sorted({p.user_id.lstrip("@") for p in req.posts})
-    return list(DEMO_USERS)
+    return req.user_ids
 
 
 def _analyze(req: AnalyzeRequest) -> list[dict]:
-    if req.platforms:
-        unknown = [p for p in req.platforms if p not in PLATFORMS]
-        if unknown:
-            raise HTTPException(400, f"Unsupported platforms: {unknown}. Use {list(PLATFORMS)}")
-    posts = [Post.from_dict(p.model_dump()) for p in req.posts] if req.posts else None
+    posts = None
+    if req.posts is not None:
+        posts = []
+        for item in req.posts:
+            raw = item.model_dump()
+            raw["platform"] = raw.get("platform") or req.platform_name
+            posts.append(Post.from_dict(raw))
+    start_date = req.date_range.start_date if req.date_range else None
+    end_date = req.date_range.end_date if req.date_range else None
     try:
-        return get_engine().analyze_users(_resolve_user_ids(req), platforms=req.platforms, posts=posts)
+        return get_engine().analyze_users(
+            _resolve_user_ids(req),
+            platforms=[req.platform_name],
+            posts=posts,
+            start_date=start_date,
+            end_date=end_date,
+        )
     except Exception as error:
         raise HTTPException(503, f"Failed to analyze posts: {error}") from error
 

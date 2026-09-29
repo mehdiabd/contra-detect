@@ -58,7 +58,7 @@ docker compose up --build -d
 
 ## API
 
-هر سه اندپوینت لیست `user_ids` می‌گیرند. اگر `posts` در بدنه باشد همان استفاده می‌شود؛ وگرنه در صورت `ES_ENABLED=true` از Elasticsearch و در غیر این صورت از `data/sample/posts.json` خوانده می‌شود.
+هر سه اندپوینت `platform_name`، لیست `user_ids` و بازهٔ اختیاری `date_range` می‌گیرند. لیست می‌تواند یک یا چند شناسه داشته باشد. اگر خالی باشد، کاربران فعال همان پلتفرم بررسی و نتایج بر اساس بیشترین امتیاز تناقض مرتب می‌شوند. اگر `posts` در بدنه باشد همان استفاده می‌شود؛ وگرنه در صورت `ES_ENABLED=true` از Elasticsearch و در غیر این صورت از `data/sample/posts.json` خوانده می‌شود.
 
 | روش | مسیر | خروجی |
 |---|---|---|
@@ -71,7 +71,23 @@ docker compose up --build -d
 ```bash
 curl -s http://localhost:8000/api/v1/users/contradiction \
   -H 'Content-Type: application/json' \
-  -d '{"user_ids":["u_ali","u_reza"]}'
+  -d '{
+    "user_ids": ["u_ali", "u_reza"],
+    "platform_name": "twitter",
+    "date_range": {
+      "start_date": "2026-01-01",
+      "end_date": "2026-01-31"
+    }
+  }'
+```
+
+برای دریافت برترین تناقض‌های یک پلتفرم، `user_ids` را خالی بفرستید:
+
+```json
+{
+  "user_ids": [],
+  "platform_name": "telegram"
+}
 ```
 
 ## داده

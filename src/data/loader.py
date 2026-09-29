@@ -1,6 +1,7 @@
 import csv
 import json
 from collections import Counter
+from datetime import date, datetime
 from pathlib import Path
 from typing import Iterable, Optional, Sequence, Union
 
@@ -33,6 +34,8 @@ def filter_posts(
     posts: Sequence[Post],
     user_ids: Optional[Iterable[str]] = None,
     platforms: Optional[Iterable[str]] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
 ) -> list[Post]:
     user_filter = {str(u) for u in user_ids} if user_ids else None
     platform_filter = set(platforms) if platforms else None
@@ -42,6 +45,15 @@ def filter_posts(
             continue
         if platform_filter is not None and post.platform not in platform_filter:
             continue
+        if start_date or end_date:
+            try:
+                post_date = datetime.fromisoformat(str(post.timestamp).replace("Z", "+00:00")).date()
+            except (TypeError, ValueError):
+                continue
+            if start_date and post_date < start_date:
+                continue
+            if end_date and post_date > end_date:
+                continue
         if post.text:
             out.append(post)
     return out
