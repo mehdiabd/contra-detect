@@ -1,0 +1,53 @@
+{
+  "posts": [
+    {
+      "user_id": "u_ali",
+      "platform": "twitter",
+      "post_id": "t1",
+      "timestamp": "2024-01-12T09:00:00Z",
+      "text": "واکسن کاملا بی‌خطر است و همه باید آن را تزریق کنند."
+    },
+    {
+      "user_id": "u_ali",
+      "platform": "telegram",
+      "post_id": "g1",
+      "timestamp": "2024-06-02T18:20:00Z",
+      "text": "واکسن خطرناک است و من مخالف تزریق آن هستم."
+    },
+    {
+      "user_id": "u_ali",
+      "platform": "instagram",
+      "post_id": "i1",
+      "timestamp": "2024-06-03T11:00:00Z",
+      "text": "به نظرم سلامت مردم مهم‌تر از شایعات ضد واکسن است."
+    },
+    {
+      "user_id": "u_sara",
+      "platform": "twitter",
+      "post_id": "t2",
+      "timestamp": "2023-11-01T08:00:00Z",
+      "text": "من هرگز از این حزب حمایت نمی‌کنم و برنامه‌هایش را رد می‌کنم."
+    },
+    {
+      "user_id": "u_sara",
+      "platform": "telegram",
+      "post_id": "g2",
+      "timestamp": "2024-03-21T19:10:00Z",
+      "text": "در این انتخابات حتما به همین حزب رای می‌دهم و از برنامه‌اش دفاع می‌کنم."
+    },
+    {
+      "user_id": "u_reza",
+      "platform": "instagram",
+      "post_id": "i2",
+      "timestamp": "2024-02-10T12:00:00Z",
+      "text": "آلودگی هوای تهران جدی است و باید حمل‌ونقل عمومی تقویت شود."
+    },
+    {
+      "user_id": "u_reza",
+      "platform": "twitter",
+      "post_id": "t3",
+      "timestamp": "2024-02-14T16:40:00Z",
+      "text": "برای کاهش آلودگی بهتر است استفاده از خودروهای شخصی محدود شود."
+    }
+  ]
+}
