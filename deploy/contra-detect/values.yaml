@@ -1,0 +1,78 @@
+# DEV-owned config for contra-detect (FastAPI service).
+# Image tag is set by CI at deploy time. Chart/path convention matches echo-chamber-detection.
+replicaCount: 1
+
+image:
+  repository: synappse.repo.stinascloud.ir/data-science-projects/contra-detect
+
+imagePullSecrets:
+- name: nexus-access
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 1Gi
+  limits:
+    cpu: '2'
+    memory: 8Gi
+
+healthChecks:
+  readiness:
+    enabled: true
+    path: /health
+    port: http
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 8
+  liveness:
+    enabled: true
+    path: /health
+    port: http
+    initialDelaySeconds: 40
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 6
+
+env:
+- name: MODEL_DIR
+  value: /app/models/saved/best_model
+- name: ES_ENABLED
+  value: 'true'
+- name: ELASTIC_AUTH
+  value: '1'
+- name: ES_HOSTS
+  value: https://elastic.synappse.ir
+- name: ES_INDEX_TWITTER
+  value: twitter_temp_data
+- name: ES_INDEX_TELEGRAM
+  value: telegram_temp_data,telegram_source,telegram_comment_data
+- name: ES_INDEX_INSTAGRAM
+  value: instagram_temp_data,instagram_source,instagram_comment_data
+
+volumes:
+- name: model-data
+  persistentVolumeClaim:
+    claimName: contra-detect-model-data
+
+volumeMounts:
+- name: model-data
+  mountPath: /app/models/saved
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-body-size: '0'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '300'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '300'
+  hosts:
+  - host: api.synappse.ir
+    paths:
+    - path: /api/contra-detect(/|$)(.*)
+      pathType: ImplementationSpecific

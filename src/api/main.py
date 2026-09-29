@@ -2,13 +2,16 @@ from functools import lru_cache
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
-from config import API_CONFIG, ES_CONFIG, PLATFORMS
+from config import API_CONFIG, PLATFORMS
 from src.data import elastic
 from src.data.schema import Post
 from src.detection.engine import ContradictionEngine
-from src.models.predictor import resolve_model_source
+from src.models.predictor import ContradictionPredictor, resolve_model_source
+
+DEMO_USERS = ["tw_nima", "tg_maryam", "ig_kamran"]
 
 app = FastAPI(
     title=API_CONFIG["title"],
@@ -36,16 +39,19 @@ def get_engine() -> ContradictionEngine:
     return ContradictionEngine()
 
 
+@app.on_event("startup")
+def warmup_model() -> None:
+    engine = get_engine()
+    if engine.predictor is None:
+        engine.predictor = ContradictionPredictor()
+
+
 def _resolve_user_ids(req: AnalyzeRequest) -> list[str]:
     if req.user_ids:
         return [u.lstrip("@") for u in req.user_ids]
     if req.posts:
         return sorted({p.user_id.lstrip("@") for p in req.posts})
-    if elastic.is_configured():
-        users = elastic.fetch_active_users(limit=3, min_posts=6)
-        if users:
-            return users
-    raise HTTPException(400, "user_ids is required when Elasticsearch has no active users.")
+    return list(DEMO_USERS)
 
 
 def _analyze(req: AnalyzeRequest) -> list[dict]:
@@ -56,8 +62,13 @@ def _analyze(req: AnalyzeRequest) -> list[dict]:
     posts = [Post.from_dict(p.model_dump()) for p in req.posts] if req.posts else None
     try:
         return get_engine().analyze_users(_resolve_user_ids(req), platforms=req.platforms, posts=posts)
-    except Exception as exc:
-        raise HTTPException(503, f"Failed to read reference tweets from Elasticsearch: {exc}") from exc
+    except Exception as error:
+        raise HTTPException(503, f"Failed to analyze posts: {error}") from error
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")
@@ -66,34 +77,26 @@ def health():
         "status": "ok",
         "model_source": resolve_model_source(),
         "es_enabled": elastic.is_configured(),
-        "es_index": ES_CONFIG.get("index"),
+        "es_indexes": elastic.configured_indexes(),
     }
     if elastic.is_configured():
         try:
             payload["elasticsearch"] = elastic.ping()
-        except Exception as exc:
+            if not payload["elasticsearch"].get("ok"):
+                payload["status"] = "degraded"
+        except Exception as error:
             payload["status"] = "degraded"
-            payload["elasticsearch_error"] = str(exc)
+            payload["elasticsearch_error"] = str(error)
     return payload
 
 
 @app.get("/api/v1/demo")
 def demo():
-    """Operational output: reference tweets from twitter_temp_data."""
-    if not elastic.is_configured():
-        raise HTTPException(503, "Elasticsearch is not configured.")
-    try:
-        elastic.ping()
-        users = elastic.fetch_active_users(limit=3, min_posts=6)
-    except Exception as exc:
-        raise HTTPException(503, f"Elasticsearch is unreachable: {exc}") from exc
-    if not users:
-        raise HTTPException(404, "No users with enough reference tweets were found.")
-    results = get_engine().analyze_users(users)
+    """Controlled sample: one user per platform (X, Telegram, Instagram)."""
+    results = get_engine().analyze_users(DEMO_USERS)
     return {
-        "description": "خروجی عملیاتی از توییت‌های مرجع ایندکس twitter_temp_data",
-        "index": ES_CONFIG.get("index"),
-        "users": users,
+        "description": "نمونه کنترل‌شده از هر سه بستر (ایکس، تلگرام، اینستاگرام)",
+        "users": DEMO_USERS,
         "has_contradiction": [
             {"user_id": row["user_id"], "has_contradiction": row["has_contradiction"], "score": row["score"]}
             for row in results

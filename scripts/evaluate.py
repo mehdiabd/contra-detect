@@ -7,11 +7,13 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from config import BEST_MODEL_DIR
+from config import BEST_MODEL_DIR, MODEL_CONFIG
 from src.data.loader import load_farstail, load_pairs_csv
 from src.models.predictor import ContradictionPredictor
 from src.models.trainer import compute_classification_metrics
 import numpy as np
+
+METRICS_PATH = ROOT / "reports" / "farstail_eval_metrics.json"
 
 
 def parse_args() -> argparse.Namespace:
@@ -19,6 +21,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--source", choices=["farstail", "csv"], default="farstail")
     parser.add_argument("--pairs", type=Path, help="Labeled pairs CSV when --source csv")
     parser.add_argument("--model", type=Path, default=BEST_MODEL_DIR)
+    parser.add_argument("--output", type=Path, default=METRICS_PATH)
     return parser.parse_args()
 
 
@@ -40,7 +43,18 @@ def main() -> None:
     logits = np.zeros((len(preds), 3), dtype=np.float32)
     logits[np.arange(len(pred_ids)), pred_ids] = 1.0
     metrics = compute_classification_metrics((logits, labels))
-    print(json.dumps(metrics, ensure_ascii=False, indent=2))
+    payload = {
+        "source": args.source,
+        "n": len(pairs),
+        "target_accuracy": MODEL_CONFIG["target_accuracy"],
+        "meets_target": float(metrics.get("accuracy") or 0.0) >= MODEL_CONFIG["target_accuracy"],
+        "model": str(args.model),
+        "metrics": metrics,
+    }
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    print(f"wrote {args.output}")
 
 
 if __name__ == "__main__":

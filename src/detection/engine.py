@@ -54,9 +54,13 @@ class ContradictionEngine:
         if posts:
             resolved = [p if isinstance(p, Post) else Post.from_dict(p) for p in posts]
             return filter_posts(resolved, user_ids=user_ids, platforms=platforms)
+        sample = filter_posts(load_posts_json(SAMPLE_DATA_PATH), user_ids=user_ids, platforms=platforms)
+        wanted = {str(u) for u in user_ids}
+        if wanted and wanted.issubset({p.user_id for p in sample}):
+            return sample
         if elastic.is_configured():
             return elastic.fetch_posts(user_ids, platforms=platforms)
-        return filter_posts(load_posts_json(SAMPLE_DATA_PATH), user_ids=user_ids, platforms=platforms)
+        return sample
 
     def analyze_users(
         self,

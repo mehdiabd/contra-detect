@@ -1,12 +1,14 @@
+import os
 from pathlib import Path
 from typing import Sequence, Union
 
+import config  # noqa: F401  # stubs broken scipy before transformers/sklearn
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 from config import BEST_MODEL_DIR, CONTRADICTION_LABEL_ID, FALLBACK_MODEL, MODEL_CONFIG, NLI_ID2LABEL
 from src.data.schema import Pair
-from src.preprocess.text_processor import TextProcessor
+from src.preprocess.text_processor import nli_text
 
 _CONTRA_ALIASES = {"contradiction", "contradicts", "contradict", "c"}
 
@@ -16,6 +18,20 @@ def resolve_model_source() -> str:
     if (local / "config.json").exists():
         return str(local)
     return FALLBACK_MODEL
+
+
+def resolve_ensemble_sources() -> list[str]:
+    raw = (os.getenv("ENSEMBLE_MODELS") or "").strip()
+    if not raw:
+        return []
+    models = []
+    for item in raw.split(","):
+        name = item.strip()
+        if not name:
+            continue
+        path = Path(name)
+        models.append(str(path) if (path / "config.json").exists() else name)
+    return models
 
 
 def _pick_device() -> torch.device:
@@ -28,13 +44,19 @@ def _pick_device() -> torch.device:
 
 class ContradictionPredictor:
     def __init__(self, model_dir: Union[str, Path, None] = None):
-        self.model_dir = str(model_dir or resolve_model_source())
-        self.processor = TextProcessor()
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_dir)
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_dir)
-        self.model.eval()
         self.device = _pick_device()
-        self.model.to(self.device)
+        sources = [str(model_dir)] if model_dir else resolve_ensemble_sources()
+        if not sources:
+            sources = [resolve_model_source()]
+        self.model_dir = sources[0]
+        self.members = []
+        for source in sources:
+            tokenizer = AutoTokenizer.from_pretrained(source)
+            model = AutoModelForSequenceClassification.from_pretrained(source)
+            model.eval()
+            model.to(self.device)
+            self.members.append((tokenizer, model))
+        self.tokenizer, self.model = self.members[0]
         self.id2label = self._resolve_id2label()
         self.contradiction_index = self._resolve_contradiction_index()
 
@@ -60,18 +82,20 @@ class ContradictionPredictor:
         return cls(model_dir)
 
     def _scores(self, text_a: list[str], text_b: list[str]) -> torch.Tensor:
-        encoded = self.tokenizer(
-            text_a,
-            text_b,
-            truncation=True,
-            padding=True,
-            max_length=MODEL_CONFIG["max_length"],
-            return_tensors="pt",
-        )
-        encoded = {k: v.to(self.device) for k, v in encoded.items()}
+        probs = []
         with torch.no_grad():
-            logits = self.model(**encoded).logits
-            return torch.softmax(logits, dim=1).cpu()
+            for tokenizer, model in self.members:
+                encoded = tokenizer(
+                    text_a,
+                    text_b,
+                    truncation=True,
+                    padding=True,
+                    max_length=MODEL_CONFIG["max_length"],
+                    return_tensors="pt",
+                )
+                encoded = {k: v.to(self.device) for k, v in encoded.items()}
+                probs.append(torch.softmax(model(**encoded).logits, dim=1))
+        return torch.mean(torch.stack(probs, dim=0), dim=0).cpu()
 
     def predict_pairs(self, pairs: Sequence[Pair], batch_size: int = 16) -> list[dict]:
         if not pairs:
@@ -79,14 +103,14 @@ class ContradictionPredictor:
         results = []
         for start in range(0, len(pairs), batch_size):
             chunk = list(pairs[start : start + batch_size])
-            left = [self.processor.normalize(p.text_a) for p in chunk]
-            right = [self.processor.normalize(p.text_b) for p in chunk]
+            left = [nli_text(p.text_a) for p in chunk]
+            right = [nli_text(p.text_b) for p in chunk]
             forward = self._scores(left, right)
             reverse = self._scores(right, left)
-            fwd_conf = forward.max(dim=1).values
-            rev_conf = reverse.max(dim=1).values
-            chosen = torch.where(rev_conf.unsqueeze(1) > fwd_conf.unsqueeze(1), reverse, forward)
-            contra = chosen[:, self.contradiction_index]
+            fwd_c = forward[:, self.contradiction_index]
+            rev_c = reverse[:, self.contradiction_index]
+            chosen = torch.where(rev_c.unsqueeze(1) >= fwd_c.unsqueeze(1), reverse, forward)
+            contra = torch.maximum(fwd_c, rev_c)
             labels = torch.argmax(chosen, dim=1).tolist()
             for pair, label, prob_row, contra_score in zip(chunk, labels, chosen, contra):
                 prob_list = [float(x) for x in prob_row]
