@@ -17,3 +17,26 @@ data/raw/
 data/processed/
 data/labeled/
 *.log
+models/experiments/
+
+# Generated analysis tables and experiment outputs.
+reports/error_analysis/*.csv
+reports/error_analysis/*.npz
+reports/round2/*.csv
+reports/round2/*.npz
+reports/round2/*_trials.json
+reports/round2/*_val.json
+reports/round2/evaluation.json
+reports/round2/selection.json
+reports/reproducibility/*.json
+reports/reproducibility/*.txt
+
+# Local handoff notes and experiment narratives not required by runtime.
+reports/acceptance_protocol.md
+reports/delivery_checklist.md
+reports/method_deviations.md
+reports/proposal_alignment.md
+reports/error_analysis/*.md
+reports/error_analysis/*.json
+reports/reproducibility/README.md
+reports/round2/*.md

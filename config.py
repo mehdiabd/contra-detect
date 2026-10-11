@@ -1,65 +1,11 @@
 """Central configuration for CONTRA-Detect."""
 
-import importlib.machinery
 import os
-import sys
-import types
 from pathlib import Path
 
 from dotenv import load_dotenv
 
 
-def _stub_broken_scipy_stack() -> None:
-    """macOS 27 breaks current scipy wheels; transformers only needs a few symbols to import."""
-
-    def _pkg(name: str) -> types.ModuleType:
-        module = sys.modules.get(name)
-        if module is None:
-            module = types.ModuleType(name)
-            module.__spec__ = importlib.machinery.ModuleSpec(name, loader=None, is_package=True)
-            module.__path__ = []
-            sys.modules[name] = module
-        return module
-
-    def _mod(name: str) -> types.ModuleType:
-        module = sys.modules.get(name)
-        if module is None:
-            module = types.ModuleType(name)
-            module.__spec__ = importlib.machinery.ModuleSpec(name, loader=None)
-            sys.modules[name] = module
-        return module
-
-    sklearn = _pkg("sklearn")
-    metrics = _mod("sklearn.metrics")
-    if not hasattr(metrics, "roc_curve"):
-        metrics.roc_curve = lambda *args, **kwargs: (None, None, None)
-    sklearn.metrics = metrics
-
-    optimize = _pkg("scipy.optimize")
-    if not hasattr(optimize, "linear_sum_assignment"):
-        optimize.linear_sum_assignment = lambda *args, **kwargs: (None, None)
-    if not hasattr(optimize, "LinearConstraint"):
-        optimize.LinearConstraint = object
-    if not hasattr(optimize, "milp"):
-        optimize.milp = lambda *args, **kwargs: None
-
-    dummy = types.SimpleNamespace(
-        slansvd=None,
-        dlansvd=None,
-        clansvd=None,
-        zlansvd=None,
-        slansvd_irl=None,
-        dlansvd_irl=None,
-        clansvd_irl=None,
-        zlansvd_irl=None,
-    )
-    propack = _pkg("scipy.sparse.linalg._propack")
-    for name in ("_spropack", "_dpropack", "_cpropack", "_zpropack"):
-        setattr(propack, name, dummy)
-        sys.modules.setdefault(f"scipy.sparse.linalg._propack.{name}", dummy)
-
-
-_stub_broken_scipy_stack()
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent

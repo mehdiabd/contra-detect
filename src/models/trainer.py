@@ -13,10 +13,11 @@ from transformers import (
     EarlyStoppingCallback,
     Trainer,
     TrainingArguments,
+    set_seed,
 )
 
 from config import (
-    BEST_MODEL_DIR,
+    SAVED_MODELS_DIR,
     CHECKPOINTS_DIR,
     CONTRADICTION_LABEL_ID,
     LOGS_DIR,
@@ -49,8 +50,11 @@ def compute_classification_metrics(eval_pred) -> dict:
 
 class ContradictionTrainer:
     def __init__(self, model_name: str = MODEL_CONFIG["base_model"], num_labels: int = MODEL_CONFIG["num_labels"]):
+        set_seed(MODEL_CONFIG.get("seed", 42))
         self.model_name = model_name
         self.last_trainer = None
+        self.use_cpu = False
+        self.run_dir = CHECKPOINTS_DIR
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForSequenceClassification.from_pretrained(
             model_name,
@@ -105,12 +109,12 @@ class ContradictionTrainer:
             "logging_steps": 50,
             "seed": seed,
             "data_seed": seed,
-            "use_cpu": False,
+            "use_cpu": overrides.get("use_cpu", False),
         }
         if "fp16" in params:
             import torch
 
-            kwargs["fp16"] = torch.cuda.is_available()
+            kwargs["fp16"] = torch.cuda.is_available() and not kwargs["use_cpu"]
         kwargs = {k: v for k, v in kwargs.items() if k in params}
         return TrainingArguments(**kwargs)
 
@@ -132,15 +136,22 @@ class ContradictionTrainer:
         self,
         train_pairs: Sequence[Pair],
         val_pairs: Optional[Sequence[Pair]] = None,
-        output_dir: Path = BEST_MODEL_DIR,
-        checkpoints_dir: Path = CHECKPOINTS_DIR,
+        output_dir: Path = CHECKPOINTS_DIR.parent / "experiments" / "general" / "model",
+        checkpoints_dir: Optional[Path] = None,
         **overrides,
     ) -> dict:
         output_dir = Path(output_dir)
+        if output_dir.resolve().is_relative_to(SAVED_MODELS_DIR.resolve()):
+            raise ValueError("Training cannot overwrite the production model; use an isolated output directory.")
+        checkpoints_dir = Path(checkpoints_dir) if checkpoints_dir else output_dir.parent / "checkpoints"
+        if checkpoints_dir.resolve().is_relative_to(SAVED_MODELS_DIR.resolve()):
+            raise ValueError("Checkpoints cannot overwrite the production model directory.")
         output_dir.mkdir(parents=True, exist_ok=True)
         Path(checkpoints_dir).mkdir(parents=True, exist_ok=True)
         LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
+        self.use_cpu = overrides.get("use_cpu", False)
+        self.run_dir = output_dir.parent
         do_eval = bool(val_pairs)
         train_ds = self._encode_pairs(train_pairs)
         val_ds = self._encode_pairs(val_pairs) if do_eval else None
@@ -174,7 +185,7 @@ class ContradictionTrainer:
         dataset = self._encode_pairs(pairs)
         trainer_kwargs = {
             "model": self.model,
-            "args": self._training_args(CHECKPOINTS_DIR / "eval"),
+            "args": self._training_args(self.run_dir / "evaluation", use_cpu=self.use_cpu),
             "eval_dataset": dataset,
             "compute_metrics": compute_classification_metrics,
         }
@@ -188,7 +199,7 @@ class ContradictionTrainer:
         dataset = self._encode_pairs(pairs)
         trainer_kwargs = {
             "model": self.model,
-            "args": self._training_args(CHECKPOINTS_DIR / "predict"),
+            "args": self._training_args(self.run_dir / "prediction", use_cpu=self.use_cpu),
             "eval_dataset": dataset,
         }
         trainer_params = inspect.signature(Trainer.__init__).parameters
@@ -199,20 +210,27 @@ class ContradictionTrainer:
         return np.asarray(output.predictions), np.asarray(output.label_ids)
 
 
-def tune_hyperparameters(train_pairs: Sequence[Pair], val_pairs: Sequence[Pair], n_trials: int = 5) -> dict:
+def tune_hyperparameters(
+    train_pairs: Sequence[Pair], val_pairs: Sequence[Pair], n_trials: int = 5,
+    model_name: str = MODEL_CONFIG["base_model"],
+    output_root: Path = CHECKPOINTS_DIR.parent / "experiments" / "tuning",
+    use_cpu: bool = False,
+) -> dict:
     import optuna
 
     def objective(trial: optuna.Trial) -> float:
-        trainer = ContradictionTrainer()
+        trainer = ContradictionTrainer(model_name=model_name)
         metrics = trainer.train(
             train_pairs,
             val_pairs,
+            output_dir=Path(output_root) / f"trial-{trial.number}" / "model",
+            use_cpu=use_cpu,
             learning_rate=trial.suggest_float("learning_rate", 1e-5, 5e-5, log=True),
             batch_size=trial.suggest_categorical("batch_size", [8, 16]),
             num_epochs=trial.suggest_int("num_epochs", 3, 7),
         )
         return float(metrics.get("eval_accuracy", metrics.get("eval_f1", 0.0)))
 
-    study = optuna.create_study(direction="maximize")
+    study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=MODEL_CONFIG["seed"]))
     study.optimize(objective, n_trials=n_trials, timeout=3600)
     return {"best_params": study.best_params, "best_value": study.best_value}
