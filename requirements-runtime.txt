@@ -1,0 +1,8 @@
+fastapi==0.141.1
+numpy==2.2.6
+pandas==2.3.3
+pydantic==2.13.5
+python-dotenv==1.2.3
+requests==2.34.2
+transformers==5.16.1
+uvicorn==0.52.4

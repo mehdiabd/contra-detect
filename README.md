@@ -43,20 +43,21 @@ uvicorn src.api.main:app --host 0.0.0.0 --port 8000
 
 مستندات تعاملی: `http://localhost:8000/docs`
 
-## استقرار با Docker
+## استقرار مستقل با Docker
 
-حداقل منابع پیشنهادی: ۲ هسته CPU، ۸ گیگابایت RAM، چند گیگابایت دیسک برای مدل ParsBERT.
+ایمیج شامل کد، نمونه‌داده و بستهٔ inference نهایی است؛ انتقال `models/` جداگانه لازم نیست. حجم build context و ایمیج چند گیگابایت خواهد بود. برای build به دسترسی registry پکیج‌های Python نیاز دارید؛ برای اجرای inference، مدل‌ها داخل ایمیج‌اند و دانلود مدل از Hugging Face لازم نیست.
 
 ```bash
-cp .env.example .env
-# بستهٔ نهایی مدل‌ها را طبق راهنمای تحویل در models/saved قرار دهید
-docker compose up --build -d
+docker compose build
+docker compose up -d
 ```
+
+پیش‌نیاز: Docker Engine و Docker Compose plugin. مقدار `ES_ENABLED` به‌صورت پیش‌فرض خاموش است، بنابراین API با `posts` ارسالی در درخواست کار می‌کند و به secret نیاز ندارد. برای اتصال به Elasticsearch، `.env` مقصد را جداگانه بسازید و تنظیمات ES را در آن وارد کنید؛ فایل `.env` را به Git اضافه نکنید. در صورت نیاز پورت میزبان را با `CONTRA_DETECT_PORT` تغییر دهید.
 
 سلامت سرویس: `GET http://localhost:8000/health`  
 مستندات: `http://localhost:8000/docs`
 
-مدل از حجم `./models/saved` به کانتینر mount می‌شود. اگر مدل محلی نباشد، سرویس از `FALLBACK_MODEL` استفاده می‌کند.
+برای ساخت روی یک ماشین و اجرای آفلاین روی دیگری، build کنید و ایمیج را با `docker save`/`docker load` منتقل کنید یا به registry خصوصی push/pull کنید. هر دو روش خود مدل‌ها را داخل ایمیج نگه می‌دارند.
 
 ## API
 

@@ -11,6 +11,11 @@ __pycache__
 .env
 logs
 models/checkpoints
+models/experiments
+models/saved/baseline_before_round2
+models/saved/baseline_before_targeted_v1
+models/saved/fabert_farstail
+models/saved/round2_ensemble
 data/raw
 data/processed
 data/labeled
