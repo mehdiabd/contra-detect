@@ -4,14 +4,13 @@ FROM ${PYTHON_IMAGE}
 WORKDIR /app
 
 ARG PIP_INDEX=https://nexus.repo.stinascloud.ir/repository/pypi/simple
-ARG PIP_INDEX_TORCH=https://nexus.repo.stinascloud.ir/repository/pytorch-cu128/simple
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir torch --index-url ${PIP_INDEX_TORCH}
+
 RUN pip install --no-cache-dir -r requirements.txt --index-url ${PIP_INDEX}
 
 COPY config.py ./config.py
