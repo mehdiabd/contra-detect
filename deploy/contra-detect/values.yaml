@@ -3,10 +3,10 @@
 replicaCount: 1
 
 image:
-  repository: synappse.repo.stinascloud.ir/data-science-projects/contra-detect
+  repository: registry.stinascloud.ir/data-science-projects/contra-detect
 
 imagePullSecrets:
-- name: nexus-access
+- name: harbor-access
 
 service:
   type: ClusterIP
@@ -15,10 +15,10 @@ service:
 resources:
   requests:
     cpu: 200m
-    memory: 1Gi
+    memory: 512Mi
   limits:
-    cpu: '2'
-    memory: 8Gi
+    cpu: 1
+    memory: 2Gi
 
 healthChecks:
   readiness:
@@ -67,12 +67,11 @@ ingress:
   enabled: true
   className: nginx
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-body-size: '0'
     nginx.ingress.kubernetes.io/proxy-read-timeout: '300'
     nginx.ingress.kubernetes.io/proxy-send-timeout: '300'
   hosts:
-  - host: api.synappse.ir
+  - host: contra-detect-api.stinascloud.ir
     paths:
-    - path: /api/contra-detect(/|$)(.*)
-      pathType: ImplementationSpecific
+      - path: /
+        pathType: ImplementationSpecific
