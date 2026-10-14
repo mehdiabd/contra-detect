@@ -3,7 +3,7 @@ FROM ${PYTHON_IMAGE}
 
 WORKDIR /app
 
-ARG PIP_INDEX=https://pypi.org/simple
+ARG PIP_INDEX=https://nexus.repo.stinascloud.ir/repository/pypi/simple
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential \
