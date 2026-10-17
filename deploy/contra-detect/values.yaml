@@ -53,6 +53,10 @@ env:
   value: telegram_temp_data,telegram_source,telegram_comment_data
 - name: ES_INDEX_INSTAGRAM
   value: instagram_temp_data,instagram_source,instagram_comment_data
+- name: HF_HOME
+  value: /app/models/hf_home
+- name: HF_DATASETS_CACHE
+  value: /app/models/.cache
 
 volumes:
 - name: model-data
