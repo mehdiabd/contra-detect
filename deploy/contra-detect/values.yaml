@@ -54,9 +54,9 @@ env:
 - name: ES_INDEX_INSTAGRAM
   value: instagram_temp_data,instagram_source,instagram_comment_data
 - name: HF_HOME
-  value: /app/models/hf_home
+  value: /app/models/saved/hf_home
 - name: HF_DATASETS_CACHE
-  value: /app/models/.cache
+  value: /app/models/saved/.cache
 
 volumes:
 - name: model-data
