@@ -1,0 +1,311 @@
+{
+  "indexes": {
+    "twitter": [
+      "twitter_temp_data"
+    ],
+    "telegram": [
+      "telegram_temp_data",
+      "telegram_source",
+      "telegram_comment_data"
+    ],
+    "instagram": [
+      "instagram_temp_data",
+      "instagram_source",
+      "instagram_comment_data"
+    ]
+  },
+  "elasticsearch": {
+    "ok": true,
+    "indexes": {
+      "twitter": [
+        {
+          "ok": true,
+          "index": "twitter_temp_data",
+          "docs": 195624259
+        }
+      ],
+      "telegram": [
+        {
+          "ok": true,
+          "index": "telegram_temp_data",
+          "docs": 1468830313
+        },
+        {
+          "ok": true,
+          "index": "telegram_source",
+          "docs": 89570
+        },
+        {
+          "ok": true,
+          "index": "telegram_comment_data",
+          "docs": 130802511
+        }
+      ],
+      "instagram": [
+        {
+          "ok": true,
+          "index": "instagram_temp_data",
+          "docs": 15005249
+        },
+        {
+          "ok": true,
+          "index": "instagram_source",
+          "docs": 3187768
+        },
+        {
+          "ok": true,
+          "index": "instagram_comment_data",
+          "docs": 3717153
+        }
+      ]
+    }
+  },
+  "users_by_platform": {
+    "twitter": [
+      "banuuu123wf",
+      "FtmehShoae"
+    ],
+    "telegram": [
+      "farzancar6969",
+      "mehrdadkhodro"
+    ],
+    "instagram": [
+      "abolfaz.sadat.64",
+      "david.company.ir"
+    ]
+  },
+  "posts": {
+    "post_count": 67,
+    "platforms": {
+      "twitter": 17,
+      "telegram": 30,
+      "instagram": 20
+    },
+    "users": {
+      "banuuu123wf": 2,
+      "FtmehShoae": 15,
+      "mehrdadkhodro": 15,
+      "farzancar6969": 15,
+      "abolfaz.sadat.64": 5,
+      "david.company.ir": 15
+    }
+  },
+  "results": [
+    {
+      "user_id": "banuuu123wf",
+      "has_contradiction": true,
+      "score": 0.8873,
+      "post_count": 2,
+      "pair_count": 1,
+      "contradictory_posts": [
+        {
+          "contradiction_score": 0.8873,
+          "label": "contradiction",
+          "similarity": 0.2442,
+          "post_a": {
+            "platform": "twitter",
+            "timestamp": "2026-09-12T08:20:51Z",
+            "text": "به نظرتون چه جور رابطه ای و چند بار در هفته میتونه جلوگیری کنه از جق زدن مردا؟"
+          },
+          "post_b": {
+            "platform": "twitter",
+            "timestamp": "2026-09-12T08:20:11Z",
+            "text": "به نظرتون چند بار رابطه در هفته میتونه ارامش رو در محیط خونه فراهم کنه؟"
+          }
+        }
+      ]
+    },
+    {
+      "user_id": "FtmehShoae",
+      "has_contradiction": false,
+      "score": 0.0063,
+      "post_count": 15,
+      "pair_count": 1,
+      "contradictory_posts": []
+    },
+    {
+      "user_id": "farzancar6969",
+      "has_contradiction": true,
+      "score": 0.8243,
+      "post_count": 15,
+      "pair_count": 9,
+      "contradictory_posts": [
+        {
+          "contradiction_score": 0.8647,
+          "label": "contradiction",
+          "similarity": 0.3507,
+          "post_a": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:52:32+00:00",
+            "text": "اریزو 5 خاکستری 1401 بیمه 9 ماه\nقیمت : 2٫800 💥\nکارکرد 85 هزار تا 2 لکه جزیی رنگ\nگارانتی فعال \n\n📞 09121759478 بهزاد نعمتی \n📞 09123036734 ارش پشتاره"
+          },
+          "post_b": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:52:06+00:00",
+            "text": "دیگنیتی پرایم مشکی داخل مشکی 1403\nقیمت : 4٫600 💥\nکارکرد 19 هزار تا به رویت صفر\nگارانتی فعال\n\n📞 09121759478 بهزاد نعمتی \n📞 09123036734 ارش پشتاره"
+          }
+        },
+        {
+          "contradiction_score": 0.8625,
+          "label": "contradiction",
+          "similarity": 0.3347,
+          "post_a": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:52:03+00:00",
+            "text": "دیگنیتی پرایم سفید داخل مشکی مدل 1404\n13/000 تاکار\nب رویت\nموجود در نمایشگاه \n09124874307\n09199279016"
+          },
+          "post_b": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:51:45+00:00",
+            "text": "سوناتا yf سفید فول مدل 2013\n210/000 تاکار \nبیرنگ بدون توضیحات \nدرجه 1\nموجود در نمایشگاه \n09124874307\n09199279016"
+          }
+        },
+        {
+          "contradiction_score": 0.9762,
+          "label": "contradiction",
+          "similarity": 0.3004,
+          "post_a": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:52:23+00:00",
+            "text": "سوزوکی بالنو سفید مدل 2024\n\nکارکرد 4 هزار بی توضیح\n\nقابل تحویل ✅🔥\n\n09181440200 09127205330"
+          },
+          "post_b": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:52:14+00:00",
+            "text": "نیسان ترا سفید مدل 404 برج 12 با کیت\n\nکارکرد 15 هزار \nقابل تحویل ✅🔥\n\n09181440200 09127205330"
+          }
+        },
+        {
+          "contradiction_score": 0.6892,
+          "label": "contradiction",
+          "similarity": 0.2083,
+          "post_a": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:52:47+00:00",
+            "text": "207 پانا 405 روز با رینگ \nکارکرد 950 تکی \n\n2/410\n\n09120882943"
+          },
+          "post_b": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:52:41+00:00",
+            "text": "207 پانا مشکی\nرینگ\nبرج روز\n2495🔥\n09107560023"
+          }
+        },
+        {
+          "contradiction_score": 0.6892,
+          "label": "contradiction",
+          "similarity": 0.2083,
+          "post_a": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:52:41+00:00",
+            "text": "207 پانا 405 روز با رینگ \nکارکرد 950 تکی \n\n2/410\n\n09120882943"
+          },
+          "post_b": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:52:41+00:00",
+            "text": "207 پانا مشکی\nرینگ\nبرج روز\n2495🔥\n09107560023"
+          }
+        }
+      ]
+    },
+    {
+      "user_id": "mehrdadkhodro",
+      "has_contradiction": true,
+      "score": 0.8791,
+      "post_count": 15,
+      "pair_count": 19,
+      "contradictory_posts": [
+        {
+          "contradiction_score": 0.8954,
+          "label": "contradiction",
+          "similarity": 0.308,
+          "post_a": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:58:12+00:00",
+            "text": "207 هیدرولیک سفید \n405 برج روز\nقابل تحویل اپکوی \n\n🔥🔥🔥🔥\n\n09124525952\n09166634786"
+          },
+          "post_b": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:57:35+00:00",
+            "text": "تارا V1 وی یک سفید\n405 برج رووز\nبدون پلاک \n\n🔥🔥🔥🔥\n\n09124525952\n09166634786"
+          }
+        },
+        {
+          "contradiction_score": 0.8954,
+          "label": "contradiction",
+          "similarity": 0.308,
+          "post_a": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:57:35+00:00",
+            "text": "207 هیدرولیک سفید \n405 برج روز\nقابل تحویل اپکوی \n\n🔥🔥🔥🔥\n\n09124525952\n09166634786"
+          },
+          "post_b": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:57:35+00:00",
+            "text": "تارا V1 وی یک سفید\n405 برج رووز\nبدون پلاک \n\n🔥🔥🔥🔥\n\n09124525952\n09166634786"
+          }
+        },
+        {
+          "contradiction_score": 0.8954,
+          "label": "contradiction",
+          "similarity": 0.308,
+          "post_a": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:57:35+00:00",
+            "text": "تارا V1 وی یک سفید\n405 برج رووز\nبدون پلاک \n\n🔥🔥🔥🔥\n\n09124525952\n09166634786"
+          },
+          "post_b": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:57:29+00:00",
+            "text": "207 هیدرولیک سفید \n405 برج روز\nقابل تحویل اپکوی \n\n🔥🔥🔥🔥\n\n09124525952\n09166634786"
+          }
+        },
+        {
+          "contradiction_score": 0.6253,
+          "label": "contradiction",
+          "similarity": 0.2933,
+          "post_a": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:57:06+00:00",
+            "text": "سورن موتور پارس مشکی رینگ شرکتی 405 روز با طلا 11 میلیونی\n\n1/955/000/000🔥🔥🔥🔥\n\n09127312041 معروفی"
+          },
+          "post_b": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:56:44+00:00",
+            "text": "دنا 6 سرعته شش 6 دنده سفید 405 برج 5 با رینگ شرکتی پشت امپر 1250 بدون مراجعه ❌️❌️❌️❌️\n\n2/489/000/000🔥🔥🔥🔥\n\n09127312041 معروفی"
+          }
+        },
+        {
+          "contradiction_score": 0.8449,
+          "label": "contradiction",
+          "similarity": 0.2482,
+          "post_a": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:57:26+00:00",
+            "text": "خوش قیمت🔥🔥🔥🔥🔥🔥امروز\n\nمزدا 3 خاکستری داخل مارون 2025 پلاک تهران\nسند تو داشبورد / با گارانتی رنگ / با دوربین 360 / قابل تحویل \n بهمن موتوری\n\nکرولا کراس هیبرید سفید 2026 با پلاک و مدارک پلاک تهران برج 6 داغ سند اماده گارانتی ایرتویا\n\n \nتیگو 7 پلاگین هیبرید مشکی 405/05 پلاک تهران\nسند اماده / قابل تحویل / با کارشناسی \n\nفیدلیتی پرستیژ 7 سفید داخل طوسی 405/06 پلاک تهران\n\nاینوی انوی ان وی هیبرید سفید 405/06 پلاک تهران داغ داغ سند ازاد گارانتی بهمن\n\n09121112247\n09121112231\nشاهرخ احمدیان"
+          },
+          "post_b": {
+            "platform": "telegram",
+            "timestamp": "2026-09-12T07:55:45+00:00",
+            "text": "اوتلندر m M لاین سفید داخل مشکی 2023\n\nدو دف رینگ 20 فول کامل \n\n پلاک تهران \nقابل تحویل \nسند اماده \n\n📲09122888038"
+          }
+        }
+      ]
+    },
+    {
+      "user_id": "abolfaz.sadat.64",
+      "has_contradiction": false,
+      "score": 0.0,
+      "post_count": 5,
+      "pair_count": 0,
+      "contradictory_posts": []
+    },
+    {
+      "user_id": "david.company.ir",
+      "has_contradiction": false,
+      "score": 0.0126,
+      "post_count": 15,
+      "pair_count": 80,
+      "contradictory_posts": []
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "source": "FarsTail test",
+  "base_model": "sbunlp/fabert",
+  "protocol": "train+val",
+  "best_epoch": 2,
+  "target_accuracy": 0.85,
+  "meets_target": false,
+  "gap_to_target": 0.5079,
+  "model_dir": "models/saved/fabert_farstail",
+  "validation": {
+    "eval_loss": 1.0987,
+    "eval_accuracy": 0.3403,
+    "eval_f1": 0.1693,
+    "eval_precision": 0.1134,
+    "eval_recall": 0.3333,
+    "eval_f1_contradiction": 0.0,
+    "eval_runtime": 28.6591,
+    "eval_samples_per_second": 53.63,
+    "eval_steps_per_second": 3.385,
+    "epoch": 5.0
+  },
+  "test": {
+    "eval_loss": 1.0984,
+    "eval_model_preparation_time": 0.0004,
+    "eval_accuracy": 0.3421,
+    "eval_f1": 0.1699,
+    "eval_precision": 0.114,
+    "eval_recall": 0.3333,
+    "eval_f1_contradiction": 0.0,
+    "eval_runtime": 33.8148,
+    "eval_samples_per_second": 46.252,
+    "eval_steps_per_second": 5.796,
+    "epoch": 0
+  },
+  "note": "Accuracy is reported on FarsTail test, not on unlabeled social-media posts."
+}

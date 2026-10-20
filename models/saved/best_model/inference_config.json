@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "members": [
+    {
+      "path": "../targeted_v1",
+      "weight": 0.25,
+      "name": "current"
+    },
+    {
+      "path": "../parsnlu_farstail",
+      "weight": 0.25,
+      "name": "parsnlu"
+    },
+    {
+      "path": "../mdeberta_nli",
+      "weight": 0.5,
+      "name": "mdeberta"
+    }
+  ],
+  "max_length": 512,
+  "selection_split": "validation",
+  "canonical_labels": [
+    "entailment",
+    "contradiction",
+    "neutral"
+  ]
+}

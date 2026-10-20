@@ -1,14 +1,18 @@
+from datetime import date
 from functools import lru_cache
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from fastapi.responses import JSONResponse, RedirectResponse
+from pydantic import BaseModel, Field, field_validator, model_validator
 
-from config import API_CONFIG, ES_CONFIG, PLATFORMS
+from config import API_CONFIG
 from src.data import elastic
-from src.data.schema import Post
+from src.data.schema import Post, normalize_platform
 from src.detection.engine import ContradictionEngine
-from src.models.predictor import resolve_model_source
+from src.models.predictor import ContradictionPredictor
+
+DEMO_USERS = ["tw_nima", "tg_maryam", "ig_kamran"]
 
 app = FastAPI(
     title=API_CONFIG["title"],
@@ -20,15 +24,37 @@ app = FastAPI(
 class PostIn(BaseModel):
     user_id: str
     text: str
-    platform: str = "twitter"
+    platform: Optional[str] = None
     post_id: str = ""
     timestamp: Optional[str] = None
 
 
+class DateRange(BaseModel):
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+
+    @model_validator(mode="after")
+    def validate_order(self):
+        if self.start_date and self.end_date and self.start_date > self.end_date:
+            raise ValueError("start_date must be before or equal to end_date")
+        return self
+
+
 class AnalyzeRequest(BaseModel):
     user_ids: list[str] = Field(default_factory=list)
-    platforms: Optional[list[str]] = None
+    platform_name: str
+    date_range: Optional[DateRange] = None
     posts: Optional[list[PostIn]] = None
+
+    @field_validator("platform_name")
+    @classmethod
+    def validate_platform(cls, value: str) -> str:
+        return normalize_platform(value)
+
+    @field_validator("user_ids")
+    @classmethod
+    def normalize_user_ids(cls, values: list[str]) -> list[str]:
+        return list(dict.fromkeys(str(value).strip().lstrip("@") for value in values if str(value).strip()))
 
 
 @lru_cache(maxsize=1)
@@ -36,64 +62,79 @@ def get_engine() -> ContradictionEngine:
     return ContradictionEngine()
 
 
+@app.on_event("startup")
+def warmup_model() -> None:
+    engine = get_engine()
+    if engine.predictor is None:
+        engine.predictor = ContradictionPredictor()
+
+
 def _resolve_user_ids(req: AnalyzeRequest) -> list[str]:
-    if req.user_ids:
-        return [u.lstrip("@") for u in req.user_ids]
-    if req.posts:
-        return sorted({p.user_id.lstrip("@") for p in req.posts})
-    if elastic.is_configured():
-        users = elastic.fetch_active_users(limit=3, min_posts=6)
-        if users:
-            return users
-    raise HTTPException(400, "user_ids is required when Elasticsearch has no active users.")
+    return req.user_ids
 
 
 def _analyze(req: AnalyzeRequest) -> list[dict]:
-    if req.platforms:
-        unknown = [p for p in req.platforms if p not in PLATFORMS]
-        if unknown:
-            raise HTTPException(400, f"Unsupported platforms: {unknown}. Use {list(PLATFORMS)}")
-    posts = [Post.from_dict(p.model_dump()) for p in req.posts] if req.posts else None
+    posts = None
+    if req.posts is not None:
+        posts = []
+        for item in req.posts:
+            raw = item.model_dump()
+            raw["platform"] = raw.get("platform") or req.platform_name
+            posts.append(Post.from_dict(raw))
+    start_date = req.date_range.start_date if req.date_range else None
+    end_date = req.date_range.end_date if req.date_range else None
     try:
-        return get_engine().analyze_users(_resolve_user_ids(req), platforms=req.platforms, posts=posts)
-    except Exception as exc:
-        raise HTTPException(503, f"Failed to read reference tweets from Elasticsearch: {exc}") from exc
+        return get_engine().analyze_users(
+            _resolve_user_ids(req),
+            platforms=[req.platform_name],
+            posts=posts,
+            start_date=start_date,
+            end_date=end_date,
+        )
+    except Exception as error:
+        raise HTTPException(503, f"Failed to analyze posts: {error}") from error
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")
 def health():
+    predictor = get_engine().predictor
+    if predictor is None:
+        return JSONResponse(status_code=503, content={"status": "not_ready", "reason": "Model is not loaded"})
     payload = {
         "status": "ok",
-        "model_source": resolve_model_source(),
+        "model_source": predictor.bundle_dir or predictor.model_dir,
+        "model": {
+            "sources": predictor.model_sources,
+            "weights": predictor.member_weights,
+            "max_length": predictor.max_length,
+            "release": predictor.release_info,
+        },
         "es_enabled": elastic.is_configured(),
-        "es_index": ES_CONFIG.get("index"),
+        "es_indexes": elastic.configured_indexes(),
     }
     if elastic.is_configured():
         try:
             payload["elasticsearch"] = elastic.ping()
-        except Exception as exc:
+            if not payload["elasticsearch"].get("ok"):
+                payload["status"] = "degraded"
+        except Exception as error:
             payload["status"] = "degraded"
-            payload["elasticsearch_error"] = str(exc)
+            payload["elasticsearch_error"] = str(error)
     return payload
 
 
 @app.get("/api/v1/demo")
 def demo():
-    """Operational output: reference tweets from twitter_temp_data."""
-    if not elastic.is_configured():
-        raise HTTPException(503, "Elasticsearch is not configured.")
-    try:
-        elastic.ping()
-        users = elastic.fetch_active_users(limit=3, min_posts=6)
-    except Exception as exc:
-        raise HTTPException(503, f"Elasticsearch is unreachable: {exc}") from exc
-    if not users:
-        raise HTTPException(404, "No users with enough reference tweets were found.")
-    results = get_engine().analyze_users(users)
+    """Controlled sample: one user per platform (X, Telegram, Instagram)."""
+    results = get_engine().analyze_users(DEMO_USERS)
     return {
-        "description": "خروجی عملیاتی از توییت‌های مرجع ایندکس twitter_temp_data",
-        "index": ES_CONFIG.get("index"),
-        "users": users,
+        "description": "نمونه کنترل‌شده از هر سه بستر (ایکس، تلگرام، اینستاگرام)",
+        "users": DEMO_USERS,
         "has_contradiction": [
             {"user_id": row["user_id"], "has_contradiction": row["has_contradiction"], "score": row["score"]}
             for row in results

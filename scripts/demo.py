@@ -28,10 +28,12 @@ def resolve_users(args: argparse.Namespace) -> list[str]:
     if not elastic.is_configured():
         raise SystemExit("Elasticsearch is not configured. Set ES_ENABLED=true and ES_API_KEY in .env")
     info = elastic.ping()
-    print(f"اتصال ES برقرار شد. ایندکس={info['index']} تعداد سند={info['docs']}")
-    users = elastic.fetch_active_users(limit=args.limit, min_posts=6)
+    print(f"اتصال ES برقرار شد. ایندکس‌ها={info.get('indexes')}")
+    grouped = elastic.fetch_active_users_by_platform(per_platform=max(1, args.limit // 3 or 1), min_posts=6)
+    users = [u for names in grouped.values() for u in names][: args.limit]
     if not users:
-        raise SystemExit("کاربری با توییت مرجع کافی در ایندکس پیدا نشد.")
+        raise SystemExit("کاربری با پست مرجع کافی در ایندکس پیدا نشد.")
+    print("کاربران هر بستر:", grouped)
     return users
 
 
@@ -47,7 +49,7 @@ def main() -> None:
         print(f"\nکاربر: {row['user_id']}")
         print(f"تناقض دارد؟ {_yes(row['has_contradiction'])}")
         print(f"امتیاز تناقض: {row['score']}")
-        print(f"تعداد توییت مرجع: {row['post_count']}")
+        print(f"تعداد پست مرجع: {row['post_count']}")
         hits = row["contradictory_posts"]
         if not hits:
             print("پست متناقض: ندارد")

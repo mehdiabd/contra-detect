@@ -1,10 +1,11 @@
 import csv
 import json
+from collections import Counter
+from datetime import date, datetime
 from pathlib import Path
 from typing import Iterable, Optional, Sequence, Union
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 from config import DATA_SPLIT, FARSTAIL_DIR, FARSTAIL_URLS, NLI_ID2LABEL, NLI_LABEL2ID, SAMPLE_DATA_PATH
 from src.data.schema import Pair, Post
@@ -33,6 +34,8 @@ def filter_posts(
     posts: Sequence[Post],
     user_ids: Optional[Iterable[str]] = None,
     platforms: Optional[Iterable[str]] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
 ) -> list[Post]:
     user_filter = {str(u) for u in user_ids} if user_ids else None
     platform_filter = set(platforms) if platforms else None
@@ -42,6 +45,15 @@ def filter_posts(
             continue
         if platform_filter is not None and post.platform not in platform_filter:
             continue
+        if start_date or end_date:
+            try:
+                post_date = datetime.fromisoformat(str(post.timestamp).replace("Z", "+00:00")).date()
+            except (TypeError, ValueError):
+                continue
+            if start_date and post_date < start_date:
+                continue
+            if end_date and post_date > end_date:
+                continue
         if post.text:
             out.append(post)
     return out
@@ -102,6 +114,8 @@ def split_pairs(pairs: Sequence[Pair]) -> tuple[list[Pair], list[Pair], list[Pai
     labeled = [p for p in pairs if p.label is not None]
     if len(labeled) < 10:
         raise ValueError("Need at least 10 labeled pairs to split.")
+    from sklearn.model_selection import train_test_split
+
     labels = [p.label for p in labeled]
     train, temp = train_test_split(
         labeled,
@@ -117,6 +131,41 @@ def split_pairs(pairs: Sequence[Pair]) -> tuple[list[Pair], list[Pair], list[Pai
         stratify=[p.label for p in temp],
     )
     return train, val, test
+
+
+def _norm_text(text: str) -> str:
+    return " ".join(str(text or "").split())
+
+
+def clean_pairs(pairs: Sequence[Pair]) -> list[Pair]:
+    """Drop empty texts and exact duplicate (premise, hypothesis, label) rows."""
+    seen: set[tuple[str, str, Optional[int]]] = set()
+    cleaned: list[Pair] = []
+    for pair in pairs:
+        text_a = _norm_text(pair.text_a)
+        text_b = _norm_text(pair.text_b)
+        if not text_a or not text_b:
+            continue
+        key = (text_a, text_b, pair.label)
+        if key in seen:
+            continue
+        seen.add(key)
+        pair.text_a = text_a
+        pair.text_b = text_b
+        cleaned.append(pair)
+    return cleaned
+
+
+def summarize_pairs(pairs: Sequence[Pair]) -> dict:
+    counts = Counter(NLI_ID2LABEL.get(int(p.label), str(p.label)) for p in pairs if p.label is not None)
+    total = len(pairs)
+    unlabeled = sum(1 for p in pairs if p.label is None)
+    return {
+        "count": total,
+        "unlabeled": unlabeled,
+        "labels": dict(counts),
+        "balance": {name: round(n / total, 4) for name, n in counts.items()} if total else {},
+    }
 
 
 def _pick_column(columns: Sequence[str], candidates: Sequence[str]) -> str:
@@ -166,7 +215,7 @@ def load_farstail_split(split: str, dest_dir: Path = FARSTAIL_DIR) -> list[Pair]
                 label=label,
             )
         )
-    return pairs
+    return clean_pairs(pairs)
 
 
 def load_farstail() -> tuple[list[Pair], list[Pair], list[Pair]]:
