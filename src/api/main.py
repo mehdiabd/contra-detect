@@ -1,15 +1,22 @@
-from datetime import date
 from functools import lru_cache
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
-from pydantic import BaseModel, Field, field_validator, model_validator
 
 from config import API_CONFIG
+from src.api.schemas import (
+    AnalysisResponse,
+    AnalyzeRequest,
+    ContradictionResult,
+    ContradictoryPostsResult,
+    ErrorResponse,
+    ScoreResult,
+)
 from src.data import elastic
-from src.data.schema import Post, normalize_platform
+from src.data.errors import DataSourceError
+from src.data.schema import Post
 from src.detection.engine import ContradictionEngine
+from src.detection.schema import UserAnalysis
 from src.models.predictor import ContradictionPredictor
 
 DEMO_USERS = ["tw_nima", "tg_maryam", "ig_kamran"]
@@ -19,42 +26,6 @@ app = FastAPI(
     description=API_CONFIG["description"],
     version=API_CONFIG["version"],
 )
-
-
-class PostIn(BaseModel):
-    user_id: str
-    text: str
-    platform: Optional[str] = None
-    post_id: str = ""
-    timestamp: Optional[str] = None
-
-
-class DateRange(BaseModel):
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
-
-    @model_validator(mode="after")
-    def validate_order(self):
-        if self.start_date and self.end_date and self.start_date > self.end_date:
-            raise ValueError("start_date must be before or equal to end_date")
-        return self
-
-
-class AnalyzeRequest(BaseModel):
-    user_ids: list[str] = Field(default_factory=list)
-    platform_name: str
-    date_range: Optional[DateRange] = None
-    posts: Optional[list[PostIn]] = None
-
-    @field_validator("platform_name")
-    @classmethod
-    def validate_platform(cls, value: str) -> str:
-        return normalize_platform(value)
-
-    @field_validator("user_ids")
-    @classmethod
-    def normalize_user_ids(cls, values: list[str]) -> list[str]:
-        return list(dict.fromkeys(str(value).strip().lstrip("@") for value in values if str(value).strip()))
 
 
 @lru_cache(maxsize=1)
@@ -69,11 +40,7 @@ def warmup_model() -> None:
         engine.predictor = ContradictionPredictor()
 
 
-def _resolve_user_ids(req: AnalyzeRequest) -> list[str]:
-    return req.user_ids
-
-
-def _analyze(req: AnalyzeRequest) -> list[dict]:
+def _analyze(req: AnalyzeRequest) -> list[UserAnalysis]:
     posts = None
     if req.posts is not None:
         posts = []
@@ -85,14 +52,22 @@ def _analyze(req: AnalyzeRequest) -> list[dict]:
     end_date = req.date_range.end_date if req.date_range else None
     try:
         return get_engine().analyze_users(
-            _resolve_user_ids(req),
+            req.user_ids,
             platforms=[req.platform_name],
             posts=posts,
             start_date=start_date,
             end_date=end_date,
         )
+    except DataSourceError as error:
+        raise HTTPException(503, detail={
+            "code": "data_source_unavailable",
+            "message": "Post data could not be retrieved completely. Please retry.",
+        }) from error
     except Exception as error:
-        raise HTTPException(503, f"Failed to analyze posts: {error}") from error
+        raise HTTPException(503, detail={
+            "code": "analysis_failed",
+            "message": "Post analysis could not be completed. Please retry.",
+        }) from error
 
 
 @app.get("/", include_in_schema=False)
@@ -147,42 +122,28 @@ def demo():
     }
 
 
-@app.post("/api/v1/users/contradiction")
+@app.post(
+    "/api/v1/users/contradiction",
+    response_model=AnalysisResponse[ContradictionResult],
+    responses={503: {"model": ErrorResponse}},
+)
 def detect_contradiction(req: AnalyzeRequest):
-    results = _analyze(req)
-    return {
-        "results": [
-            {
-                "user_id": row["user_id"],
-                "has_contradiction": row["has_contradiction"],
-                "score": row["score"],
-                "post_count": row["post_count"],
-            }
-            for row in results
-        ]
-    }
+    return {"results": _analyze(req)}
 
 
-@app.post("/api/v1/users/contradictory-posts")
+@app.post(
+    "/api/v1/users/contradictory-posts",
+    response_model=AnalysisResponse[ContradictoryPostsResult],
+    responses={503: {"model": ErrorResponse}},
+)
 def extract_contradictory_posts(req: AnalyzeRequest):
-    results = _analyze(req)
-    return {
-        "results": [
-            {
-                "user_id": row["user_id"],
-                "contradictory_posts": row["contradictory_posts"],
-            }
-            for row in results
-        ]
-    }
+    return {"results": _analyze(req)}
 
 
-@app.post("/api/v1/users/contradiction-score")
+@app.post(
+    "/api/v1/users/contradiction-score",
+    response_model=AnalysisResponse[ScoreResult],
+    responses={503: {"model": ErrorResponse}},
+)
 def contradiction_score(req: AnalyzeRequest):
-    results = _analyze(req)
-    return {
-        "results": [
-            {"user_id": row["user_id"], "score": row["score"]}
-            for row in results
-        ]
-    }
+    return {"results": _analyze(req)}

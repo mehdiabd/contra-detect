@@ -4,6 +4,7 @@ from typing import Any, Iterable, Optional
 import requests
 
 from config import ES_CONFIG, PLATFORMS
+from src.data.errors import DataSourceError
 from src.data.schema import Post
 
 REFERENCE_TYPES = tuple(ES_CONFIG.get("reference_types") or ("post", "tweet", "original"))
@@ -69,17 +70,27 @@ def _auth() -> Optional[tuple[str, str]]:
 
 def _request(method: str, path: str, body: Optional[dict] = None) -> dict[str, Any]:
     url = ES_CONFIG["hosts"][0].rstrip("/") + path
-    response = requests.request(
-        method,
-        url,
-        json=body,
-        headers=_headers(),
-        auth=_auth(),
-        timeout=60,
-        verify=bool(ES_CONFIG.get("verify_certs", True)),
-    )
-    response.raise_for_status()
-    return response.json() if response.content else {}
+    try:
+        response = requests.request(
+            method,
+            url,
+            json=body,
+            headers=_headers(),
+            auth=_auth(),
+            timeout=60,
+            verify=bool(ES_CONFIG.get("verify_certs", True)),
+        )
+        response.raise_for_status()
+        payload = response.json() if response.content else {}
+    except (requests.RequestException, ValueError) as error:
+        failed_response = getattr(error, "response", None)
+        status_code = failed_response.status_code if failed_response is not None else None
+        raise DataSourceError("Could not read the configured post source.", status_code) from error
+    if not isinstance(payload, dict):
+        raise DataSourceError("The post source returned an invalid response.")
+    if payload.get("timed_out") or (payload.get("_shards") or {}).get("failed", 0):
+        raise DataSourceError("The post source returned incomplete results.")
+    return payload
 
 
 def ping() -> dict:
@@ -267,13 +278,17 @@ def fetch_active_users_by_platform(
     end_date: Optional[date] = None,
 ) -> dict[str, list[str]]:
     """Return active users grouped so every configured platform can appear in output."""
-    last_error = None
+    indexes = configured_indexes(platforms)
+    if not indexes:
+        raise DataSourceError("No post source is configured for the requested platforms.")
     by_platform: dict[str, list[str]] = {}
-    for platform, names in configured_indexes(platforms).items():
+    for platform, names in indexes.items():
         seen: list[str] = []
         for index in names:
             if _is_source_catalog(index) or len(seen) >= per_platform:
                 continue
+            index_queried = False
+            mapping_error = None
             for field in _user_field_candidates(platform):
                 body = {
                     "size": 0,
@@ -298,10 +313,15 @@ def fetch_active_users_by_platform(
                 }
                 try:
                     resp = _request("POST", f"/{index}/_search", body)
-                except requests.HTTPError as exc:
-                    last_error = exc
+                except DataSourceError as error:
+                    if error.status_code != 400:
+                        raise
+                    mapping_error = error
                     continue
-                buckets = (((resp.get("aggregations") or {}).get("users") or {}).get("buckets")) or []
+                index_queried = True
+                buckets = ((resp.get("aggregations") or {}).get("users") or {}).get("buckets")
+                if not isinstance(buckets, list):
+                    raise DataSourceError("The post source returned an invalid user search response.")
                 for bucket in buckets:
                     user = str(bucket.get("key") or "").lstrip("@")
                     if user and user not in seen:
@@ -310,10 +330,10 @@ def fetch_active_users_by_platform(
                         break
                 if len(seen) >= per_platform:
                     break
+            if not index_queried and mapping_error is not None:
+                raise mapping_error
         if seen:
             by_platform[platform] = seen[:per_platform]
-    if not by_platform and last_error:
-        raise last_error
     return by_platform
 
 
@@ -388,9 +408,12 @@ def _fetch_from_index(
         "sort": [{fields["timestamp"]: {"order": "desc"}}],
     }
     resp = _request("POST", f"/{index}/_search", body)
+    hits = (resp.get("hits") or {}).get("hits")
+    if not isinstance(hits, list):
+        raise DataSourceError("The post source returned an invalid post search response.")
     posts: list[Post] = []
     counts: dict[str, int] = {u: 0 for u in user_ids}
-    for hit in ((resp.get("hits") or {}).get("hits") or []):
+    for hit in hits:
         post = _source_to_post(str(hit.get("_id", "")), hit.get("_source") or {}, platform)
         if not post:
             continue
@@ -415,7 +438,7 @@ def fetch_posts(
         return []
     indexes = configured_indexes(platforms)
     if not indexes:
-        return []
+        raise DataSourceError("No post source is configured for the requested platforms.")
     per_user = max(2, int(ES_CONFIG.get("max_posts_per_user") or 40))
     posts: list[Post] = []
     remaining = size
@@ -425,20 +448,17 @@ def fetch_posts(
                 break
             if _is_source_catalog(index):
                 continue
-            try:
-                posts.extend(
-                    _fetch_from_index(
-                        platform,
-                        index,
-                        user_ids,
-                        per_user,
-                        remaining,
-                        start_date=start_date,
-                        end_date=end_date,
-                    )
+            posts.extend(
+                _fetch_from_index(
+                    platform,
+                    index,
+                    user_ids,
+                    per_user,
+                    remaining,
+                    start_date=start_date,
+                    end_date=end_date,
                 )
-            except Exception:
-                continue
+            )
             remaining = size - len(posts)
         if remaining <= 0:
             break
