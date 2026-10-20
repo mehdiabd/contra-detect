@@ -71,7 +71,7 @@ docker compose up -d
 
 مدل ارزیابی‌شده داخل `/opt/contra-detect/models` قرار می‌گیرد. PVC قدیمی `/app/models/saved` صرفاً می‌تواند cache را نگه دارد و مدل داخل ایمیج را نمی‌پوشاند. در Docker و Kubernetes گزینهٔ `REQUIRE_MODEL_RELEASE=true` فعال است؛ نبود بسته یا اختلاف هش، شروع سرویس را متوقف می‌کند و مدل پایه جای آن اجرا نمی‌شود. منابع تنظیم‌شده برای سه مدل ۳ GiB حافظهٔ درخواستی و سقف ۸ GiB هستند؛ این تنظیم، ادعای اندازه‌گیری حداقل منابع نیست.
 
-پس از مرج و استقرار، `GET /health` باید مسیر مدل در `/opt/contra-detect/models`، سه عضو با وزن‌های `0.25 / 0.25 / 0.50` و `model.release.verified=true` با شناسهٔ `farstail-ensemble-8593-v1` را گزارش کند. `model.release.evaluation` دقت و دامنهٔ ارزیابی همین فایل‌ها را نشان می‌دهد؛ عدد ۸۵٫۹۳٪ مربوط به FarsTail است، نه سنجش زندهٔ صحت تمام پست‌های شبکه‌های اجتماعی. نسخهٔ API این انتشار `1.1.0` است. مدل‌ها تا قبل از این کنترل بارگذاری نشوند، `/health` پاسخ ۵۰۳ می‌دهد.
+پس از مرج و استقرار، `GET /health` باید مسیر مدل در `/opt/contra-detect/models`، سه عضو با وزن‌های `0.25 / 0.25 / 0.50` و `model.release.verified=true` با شناسهٔ `farstail-ensemble-8593-v1` را گزارش کند. `model.release.evaluation` دقت و دامنهٔ ارزیابی همین فایل‌ها را نشان می‌دهد؛ عدد ۸۵٫۹۳٪ مربوط به FarsTail است، نه سنجش زندهٔ صحت تمام پست‌های شبکه‌های اجتماعی. نسخهٔ API این انتشار `1.1.1` است. مدل‌ها تا قبل از این کنترل بارگذاری نشوند، `/health` پاسخ ۵۰۳ می‌دهد.
 
 منشأ و مجوز وزن‌های بیرونی مستقل از مجوز کد مخزن است: مدل پایهٔ [ParsNLI/ParsBERT](https://huggingface.co/persiannlp/parsbert-base-parsinlu-entailment) با برچسب `CC-BY-NC-SA-4.0` و مدل [mDeBERTa](https://huggingface.co/MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7) با برچسب MIT منتشر شده‌اند. شناسهٔ دقیق mDeBERTa در `scripts/download_nli_candidate.py` ثبت است؛ محدودیت سابقهٔ آموزش اعضای قدیمی و دیده‌شدن قبلی آزمون در گزارش انتشار محفوظ است.
 
@@ -84,6 +84,28 @@ docker compose up -d
 | POST | `/api/v1/users/contradiction` | وجود/عدم تناقض + امتیاز |
 | POST | `/api/v1/users/contradictory-posts` | جفت پست‌های متناقض |
 | POST | `/api/v1/users/contradiction-score` | نشان‌گر کمی در `[0, 1]` |
+
+هر سه خروجی برای هر کاربر `analysis_status`، `post_count` و `pair_count` دارند:
+
+- `completed`: حداقل یک جفت قابل بررسی تحلیل شده است. `has_contradiction=false` در این وضعیت یعنی در جفت‌های بررسی‌شده تناقضی مطابق آستانه پیدا نشده است.
+- `insufficient_data`: پس از فیلترها و آماده‌سازی، جفت قابل بررسی وجود ندارد. در خروجی‌های مربوط، `has_contradiction` و `score` برابر `null` هستند؛ این وضعیت نتیجهٔ منفی محسوب نمی‌شود. در خروجی استخراج، فهرست پست‌ها خالی و وضعیت همچنان `insufficient_data` است.
+
+نمونهٔ خروجی تشخیص برای کاربری که دادهٔ کافی ندارد:
+
+```json
+{
+  "results": [{
+    "user_id": "u_ali",
+    "analysis_status": "insufficient_data",
+    "post_count": 1,
+    "pair_count": 0,
+    "has_contradiction": null,
+    "score": null
+  }]
+}
+```
+
+کلاینت باید مقادیر `null` را از تصمیم `false` و امتیاز صفر تفکیک کند. اگر یک منبع مورد نیاز خطا بدهد، timeout شود یا نتیجهٔ ناقص برگرداند، کل درخواست با HTTP `503` و `detail.code=data_source_unavailable` رد می‌شود؛ حتی اگر بخشی از داده از منابع دیگر دریافت شده باشد. پاسخ خطا نتیجهٔ تحلیل ندارد. دریافت موفق بدون پست، خطای منبع نیست و برای کاربر درخواستی `insufficient_data` برمی‌گرداند. در صورت ارسال `posts`، تحلیل به دریافت Elasticsearch وابسته نیست.
 
 نمونه:
 

@@ -6,6 +6,7 @@ from config import CONTRADICTION_THRESHOLDS, SAMPLE_DATA_PATH
 from src.data import elastic
 from src.data.loader import filter_posts, load_posts_json
 from src.data.schema import Pair, Post
+from src.detection.schema import AnalysisStatus, UserAnalysis
 from src.features.candidates import CandidateBuilder
 from src.models.predictor import ContradictionPredictor
 
@@ -93,9 +94,7 @@ class ContradictionEngine:
         top_candidate_limit: int = 30,
         pair_threshold: float = CONTRADICTION_THRESHOLDS["pair"],
         user_threshold: float = CONTRADICTION_THRESHOLDS["user"],
-    ) -> list[dict]:
-        if self.predictor is None:
-            self.predictor = ContradictionPredictor()
+    ) -> list[UserAnalysis]:
         requested_user_ids = [str(user_id) for user_id in user_ids]
         top_mode = not requested_user_ids
         if top_mode and posts is None and elastic.is_configured():
@@ -120,10 +119,23 @@ class ContradictionEngine:
         for post in posts:
             by_user[post.user_id].append(post)
 
-        results = []
+        results: list[UserAnalysis] = []
         for user_id in requested_user_ids:
             user_posts = by_user.get(str(user_id), [])
             pairs = self.candidates.build(user_posts)
+            if not pairs:
+                results.append({
+                    "user_id": str(user_id),
+                    "analysis_status": AnalysisStatus.INSUFFICIENT_DATA,
+                    "post_count": len(user_posts),
+                    "pair_count": 0,
+                    "has_contradiction": None,
+                    "score": None,
+                    "contradictory_posts": [],
+                })
+                continue
+            if self.predictor is None:
+                self.predictor = ContradictionPredictor()
             predictions = self.predictor.predict_pairs(pairs)
             contradictory = [
                 p
@@ -136,6 +148,7 @@ class ContradictionEngine:
             results.append(
                 {
                     "user_id": str(user_id),
+                    "analysis_status": AnalysisStatus.COMPLETED,
                     "post_count": len(user_posts),
                     "pair_count": len(pairs),
                     "has_contradiction": bool(contradictory) and score >= user_threshold,
@@ -147,7 +160,7 @@ class ContradictionEngine:
             results = [row for row in results if row["contradictory_posts"]]
             results.sort(
                 key=lambda row: (
-                    row["score"],
+                    row["score"] or 0.0,
                     max(
                         (hit["contradiction_score"] for hit in row["contradictory_posts"]),
                         default=0.0,
@@ -159,5 +172,5 @@ class ContradictionEngine:
         return results
 
 
-def analyze_users(*args, **kwargs) -> list[dict]:
+def analyze_users(*args, **kwargs) -> list[UserAnalysis]:
     return ContradictionEngine().analyze_users(*args, **kwargs)
