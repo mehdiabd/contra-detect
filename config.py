@@ -132,7 +132,7 @@ API_CONFIG = {
     "port": 8000,
     "title": "CONTRA-Detect API",
     "description": "Detection of user-level verbal contradictions across X, Telegram, and Instagram.",
-    "version": "1.0.0",
+    "version": "1.1.0",
 }
 
 CONTRADICTION_THRESHOLDS = {

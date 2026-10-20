@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "release_id": "farstail-ensemble-8593-v1",
+  "bundle": "saved/best_model",
+  "created_at": "2026-10-20T06:39:34.520185+00:00",
+  "files": {
+    "saved/best_model/inference_config.json": {
+      "bytes": 454,
+      "sha256": "88ce29804cdf7988edd1e179b2b572a4abdb2ba91137e54dfe91fdf445c36fd1"
+    },
+    "saved/targeted_v1/config.json": {
+      "bytes": 913,
+      "sha256": "6cb057ef5fd1a509a12cd5140cc9b07fa37054c7dd556058596e63d96f352657"
+    },
+    "saved/targeted_v1/model.safetensors": {
+      "bytes": 651398148,
+      "sha256": "bc6e599394a0f072cfcecf41e1b20ff0d36e467003a68411e7884458a4e0e011"
+    },
+    "saved/targeted_v1/tokenizer.json": {
+      "bytes": 2789742,
+      "sha256": "da6cf6aef0976a7f6e15ead78ea8d7c6a800f9b391e9df57b4fc55f886cadc61"
+    },
+    "saved/targeted_v1/tokenizer_config.json": {
+      "bytes": 568,
+      "sha256": "50e2201021a6c338a675ac38d1b3ea308d9c03f67765a53bd4e9db94b4f6daf7"
+    },
+    "saved/parsnlu_farstail/config.json": {
+      "bytes": 1024,
+      "sha256": "2a08c6e65a9709e1439a7990754df27f5ab782375005696867d2558a0d58066b"
+    },
+    "saved/parsnlu_farstail/model.safetensors": {
+      "bytes": 651398148,
+      "sha256": "f93fb80df27d6c7a2fe9b9aa8ab942bda9b2ed02b0c13e7a202c4ec279ccd0c1"
+    },
+    "saved/parsnlu_farstail/tokenizer.json": {
+      "bytes": 2789910,
+      "sha256": "ca51b0651c816cd89e9f25d19667b8e6abc987963a011e9b3c81998f3e708298"
+    },
+    "saved/parsnlu_farstail/tokenizer_config.json": {
+      "bytes": 463,
+      "sha256": "66ef102fd94116e6b07cd9cc65113acaa74400fb1c7d3a813c5ac28dba22d72d"
+    },
+    "saved/mdeberta_nli/config.json": {
+      "bytes": 1093,
+      "sha256": "bc7b85f164a17c1b007d87fb99d3676f4a4d2e6511d2288dd3f5334dc0f34e6b"
+    },
+    "saved/mdeberta_nli/model.safetensors": {
+      "bytes": 557652046,
+      "sha256": "7c8e29f1115986d032e92b0fbaa0bdef1062a46f658b08705f237c05014a8541"
+    },
+    "saved/mdeberta_nli/tokenizer.json": {
+      "bytes": 16316151,
+      "sha256": "e23095eb61ba944c7be3a5d3e8ec19e37ce7ced0daa03550bde03e83c21b3f8a"
+    },
+    "saved/mdeberta_nli/tokenizer_config.json": {
+      "bytes": 467,
+      "sha256": "25e9f84c6b43da7bff43a0aee8eeee2c8a39d246823d8464b9275ef704eab42f"
+    },
+    "saved/mdeberta_nli/spm.model": {
+      "bytes": 4305025,
+      "sha256": "13c8d666d62a7bc4ac8f040aab68e942c861f93303156cc28f5c7e885d86d6e3"
+    },
+    "saved/mdeberta_nli/special_tokens_map.json": {
+      "bytes": 173,
+      "sha256": "311de3f4eed9d76a43bf0d71f10e62e086ca65ccce9f15d5da0d2098bf519ecc"
+    }
+  },
+  "evaluation": {
+    "dataset": "FarsTail",
+    "split": "test",
+    "scope": "three_class_nli_on_labeled_pairs",
+    "n": 1564,
+    "correct": 1344,
+    "accuracy": 0.8593350383631714,
+    "per_class": {
+      "entailment": {
+        "precision": 0.8140703517587939,
+        "recall": 0.9364161849710982,
+        "f1": 0.8709677419354839,
+        "support": 519
+      },
+      "contradiction": {
+        "precision": 0.871264367816092,
+        "recall": 0.7431372549019608,
+        "f1": 0.8021164021164022,
+        "support": 510
+      },
+      "neutral": {
+        "precision": 0.900375939849624,
+        "recall": 0.8953271028037383,
+        "f1": 0.8978444236176195,
+        "support": 535
+      }
+    },
+    "confusion_matrix": [
+      [
+        486,
+        23,
+        10
+      ],
+      [
+        88,
+        379,
+        43
+      ],
+      [
+        23,
+        33,
+        479
+      ]
+    ],
+    "matrix_order": [
+      "entailment",
+      "contradiction",
+      "neutral"
+    ],
+    "runtime_seconds": 158.729,
+    "device": "cpu",
+    "test_data_sha256": "d0dd25408036e5dd8587a8e0d98585b46b4a7d0057fece0992fb8d490ad44f4f",
+    "limitation": "The test was inspected in earlier project work; this result is not an independent social-media acceptance evaluation."
+  }
+}

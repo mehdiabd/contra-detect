@@ -21,3 +21,12 @@ data/processed
 data/labeled
 *.md
 reports
+models/saved/*/training_args.bin
+models/saved/*/baseline_training_args.bin
+models/saved/*/validation_predictions.npz
+models/saved/*/.cache
+models/saved/best_model/model.safetensors
+models/saved/best_model/config.json
+models/saved/best_model/tokenizer.json
+models/saved/best_model/tokenizer_config.json
+models/saved/best_model/targeted_training.json

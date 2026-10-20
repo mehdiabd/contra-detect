@@ -3,10 +3,10 @@
 replicaCount: 1
 
 image:
-  repository: synappse.repo.stinascloud.ir/data-science-projects/contra-detect
+  repository: registry.stinascloud.ir/data-science-projects/contra-detect
 
 imagePullSecrets:
-- name: nexus-access
+- name: harbor-access
 
 service:
   type: ClusterIP
@@ -14,8 +14,8 @@ service:
 
 resources:
   requests:
-    cpu: 200m
-    memory: 1Gi
+    cpu: '1'
+    memory: 3Gi
   limits:
     cpu: '2'
     memory: 8Gi
@@ -40,7 +40,13 @@ healthChecks:
 
 env:
 - name: MODEL_DIR
-  value: /app/models/saved/best_model
+  value: /opt/contra-detect/models/saved/best_model
+- name: REQUIRE_MODEL_RELEASE
+  value: 'true'
+- name: HF_HUB_OFFLINE
+  value: '1'
+- name: TRANSFORMERS_OFFLINE
+  value: '1'
 - name: ES_ENABLED
   value: 'true'
 - name: ELASTIC_AUTH
@@ -53,6 +59,10 @@ env:
   value: telegram_temp_data,telegram_source,telegram_comment_data
 - name: ES_INDEX_INSTAGRAM
   value: instagram_temp_data,instagram_source,instagram_comment_data
+- name: HF_HOME
+  value: /app/models/saved/hf_home
+- name: HF_DATASETS_CACHE
+  value: /app/models/saved/.cache
 
 volumes:
 - name: model-data
@@ -67,12 +77,11 @@ ingress:
   enabled: true
   className: nginx
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-body-size: '0'
     nginx.ingress.kubernetes.io/proxy-read-timeout: '300'
     nginx.ingress.kubernetes.io/proxy-send-timeout: '300'
   hosts:
-  - host: api.synappse.ir
+  - host: contra-detect-api.stinascloud.ir
     paths:
-    - path: /api/contra-detect(/|$)(.*)
-      pathType: ImplementationSpecific
+      - path: /
+        pathType: ImplementationSpecific

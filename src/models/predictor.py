@@ -11,6 +11,7 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from config import BEST_MODEL_DIR, CONTRADICTION_LABEL_ID, FALLBACK_MODEL, MODEL_CONFIG, NLI_ID2LABEL
 from src.data.schema import Pair
 from src.preprocess.text_processor import nli_text
+from src.models.release import verify_model_release
 
 _CONTRA_ALIASES = {"contradiction", "contradicts", "contradict", "c"}
 _LABEL_ALIASES = {
@@ -96,10 +97,21 @@ class ContradictionPredictor:
         sources = [str(model_dir)] if model_dir else resolve_ensemble_sources()
         if not sources:
             sources = [resolve_model_source()]
+        self.bundle_dir = None
+        self.release_info = None
+        require_release = os.getenv("REQUIRE_MODEL_RELEASE", "false").lower() in {"1", "true", "yes"}
+        if len(sources) == 1 and (Path(sources[0]) / "inference_config.json").is_file():
+            self.bundle_dir = str(Path(sources[0]).resolve())
+            manifest = Path(self.bundle_dir).parent.parent / "release.json"
+            if require_release or manifest.is_file():
+                self.release_info = verify_model_release(Path(self.bundle_dir))
+        elif require_release:
+            raise ValueError("The evaluated local model bundle is required; fallback/override models are disabled.")
         self.member_weights = [1 / len(sources)] * len(sources)
         if len(sources) == 1 and (Path(sources[0]) / "inference_config.json").exists():
             sources, self.member_weights, self.max_length = load_inference_bundle(sources[0])
         self.model_dir = sources[0]
+        self.model_sources = list(sources)
         self.members = []
         self.member_label_orders = []
         for source in sources:

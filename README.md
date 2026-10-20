@@ -47,6 +47,16 @@ uvicorn src.api.main:app --host 0.0.0.0 --port 8000
 
 ایمیج شامل کد، نمونه‌داده و بستهٔ inference نهایی است؛ انتقال `models/` جداگانه لازم نیست. حجم build context و ایمیج چند گیگابایت خواهد بود. برای build به دسترسی registry پکیج‌های Python نیاز دارید؛ برای اجرای inference، مدل‌ها داخل ایمیج‌اند و دانلود مدل از Hugging Face لازم نیست.
 
+وزن‌ها و توکن‌سازهای نسخهٔ نهایی با **Git LFS در مخزن خصوصی GitLab** نگهداری می‌شوند. روی ماشین build ابتدا Git LFS را نصب و فایل‌ها را دریافت کنید؛ runner نیز باید فایل‌های LFS را دریافت کند و `GIT_LFS_SKIP_SMUDGE` فعال نباشد:
+
+```bash
+git lfs install
+git lfs pull
+python scripts/prepare_model_release.py
+```
+
+دستور آخر، هش هر ۱۵ فایل لازم را با `models/release.json` مقایسه می‌کند. فایل‌های pointer به‌جای وزن واقعی، فایل ناقص یا مدل متفاوت باعث شکست کنترل می‌شوند. گزارش همین انتشار از ارزیابی مجدد همهٔ ۱۵۶۴ جفت آزمون ساخته شده است: ۱۳۴۴ پاسخ درست و Accuracy برابر **۸۵٫۹۳٪**. بازسازی این گزارش، با دادهٔ FarsTail و محیط کامل ارزیابی، با `python scripts/prepare_model_release.py --evaluate` انجام می‌شود؛ این دستور وزن‌ها را تغییر نمی‌دهد.
+
 ```bash
 docker compose build
 docker compose up -d
@@ -58,6 +68,12 @@ docker compose up -d
 مستندات: `http://localhost:8000/docs`
 
 برای ساخت روی یک ماشین و اجرای آفلاین روی دیگری، build کنید و ایمیج را با `docker save`/`docker load` منتقل کنید یا به registry خصوصی push/pull کنید. هر دو روش خود مدل‌ها را داخل ایمیج نگه می‌دارند.
+
+مدل ارزیابی‌شده داخل `/opt/contra-detect/models` قرار می‌گیرد. PVC قدیمی `/app/models/saved` صرفاً می‌تواند cache را نگه دارد و مدل داخل ایمیج را نمی‌پوشاند. در Docker و Kubernetes گزینهٔ `REQUIRE_MODEL_RELEASE=true` فعال است؛ نبود بسته یا اختلاف هش، شروع سرویس را متوقف می‌کند و مدل پایه جای آن اجرا نمی‌شود. منابع تنظیم‌شده برای سه مدل ۳ GiB حافظهٔ درخواستی و سقف ۸ GiB هستند؛ این تنظیم، ادعای اندازه‌گیری حداقل منابع نیست.
+
+پس از مرج و استقرار، `GET /health` باید مسیر مدل در `/opt/contra-detect/models`، سه عضو با وزن‌های `0.25 / 0.25 / 0.50` و `model.release.verified=true` با شناسهٔ `farstail-ensemble-8593-v1` را گزارش کند. `model.release.evaluation` دقت و دامنهٔ ارزیابی همین فایل‌ها را نشان می‌دهد؛ عدد ۸۵٫۹۳٪ مربوط به FarsTail است، نه سنجش زندهٔ صحت تمام پست‌های شبکه‌های اجتماعی. نسخهٔ API این انتشار `1.1.0` است. مدل‌ها تا قبل از این کنترل بارگذاری نشوند، `/health` پاسخ ۵۰۳ می‌دهد.
+
+منشأ و مجوز وزن‌های بیرونی مستقل از مجوز کد مخزن است: مدل پایهٔ [ParsNLI/ParsBERT](https://huggingface.co/persiannlp/parsbert-base-parsinlu-entailment) با برچسب `CC-BY-NC-SA-4.0` و مدل [mDeBERTa](https://huggingface.co/MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7) با برچسب MIT منتشر شده‌اند. شناسهٔ دقیق mDeBERTa در `scripts/download_nli_candidate.py` ثبت است؛ محدودیت سابقهٔ آموزش اعضای قدیمی و دیده‌شدن قبلی آزمون در گزارش انتشار محفوظ است.
 
 ## API
 

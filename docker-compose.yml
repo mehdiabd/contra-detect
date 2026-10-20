@@ -7,7 +7,8 @@ services:
     ports:
       - "${CONTRA_DETECT_PORT:-8000}:8000"
     environment:
-      MODEL_DIR: /app/models/saved/best_model
+      MODEL_DIR: /opt/contra-detect/models/saved/best_model
+      REQUIRE_MODEL_RELEASE: 'true'
       ES_ENABLED: ${ES_ENABLED:-false}
     restart: unless-stopped
     healthcheck:

@@ -3,7 +3,7 @@ FROM ${PYTHON_IMAGE}
 
 WORKDIR /app
 
-ARG PIP_INDEX=https://pypi.org/simple
+ARG PIP_INDEX=https://nexus.repo.stinascloud.ir/repository/pypi/simple
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential \
@@ -19,14 +19,22 @@ RUN pip install --no-cache-dir \
 COPY config.py ./config.py
 COPY src ./src
 COPY data/sample ./data/sample
-COPY models/saved/best_model ./models/saved/best_model
-COPY models/saved/targeted_v1 ./models/saved/targeted_v1
-COPY models/saved/parsnlu_farstail ./models/saved/parsnlu_farstail
-COPY models/saved/mdeberta_nli ./models/saved/mdeberta_nli
+COPY models/release.json /opt/contra-detect/models/release.json
+COPY models/saved/best_model/inference_config.json /opt/contra-detect/models/saved/best_model/inference_config.json
+COPY models/saved/targeted_v1 /opt/contra-detect/models/saved/targeted_v1
+COPY models/saved/parsnlu_farstail /opt/contra-detect/models/saved/parsnlu_farstail
+COPY models/saved/mdeberta_nli /opt/contra-detect/models/saved/mdeberta_nli
+
+RUN python -c "from pathlib import Path; from src.models.release import verify_model_release; verify_model_release(Path('/opt/contra-detect/models/saved/best_model'))"
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    MODEL_DIR=/app/models/saved/best_model
+    MODEL_DIR=/opt/contra-detect/models/saved/best_model \
+    REQUIRE_MODEL_RELEASE=true \
+    HF_HUB_OFFLINE=1 \
+    TRANSFORMERS_OFFLINE=1 \
+    OMP_NUM_THREADS=2 \
+    MKL_NUM_THREADS=2
 
 EXPOSE 8000
 

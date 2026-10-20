@@ -3,14 +3,14 @@ from functools import lru_cache
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from config import API_CONFIG
 from src.data import elastic
 from src.data.schema import Post, normalize_platform
 from src.detection.engine import ContradictionEngine
-from src.models.predictor import ContradictionPredictor, resolve_model_source
+from src.models.predictor import ContradictionPredictor
 
 DEMO_USERS = ["tw_nima", "tg_maryam", "ig_kamran"]
 
@@ -102,9 +102,18 @@ def root():
 
 @app.get("/health")
 def health():
+    predictor = get_engine().predictor
+    if predictor is None:
+        return JSONResponse(status_code=503, content={"status": "not_ready", "reason": "Model is not loaded"})
     payload = {
         "status": "ok",
-        "model_source": resolve_model_source(),
+        "model_source": predictor.bundle_dir or predictor.model_dir,
+        "model": {
+            "sources": predictor.model_sources,
+            "weights": predictor.member_weights,
+            "max_length": predictor.max_length,
+            "release": predictor.release_info,
+        },
         "es_enabled": elastic.is_configured(),
         "es_indexes": elastic.configured_indexes(),
     }
