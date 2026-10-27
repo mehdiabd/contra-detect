@@ -257,7 +257,10 @@ def _base_filters(
 
 def _user_field_candidates(platform: str) -> list[str]:
     field = _fields_for(platform)["user_id"]
-    names = [field, "user_name", "channel_username", "sender", "username", "user.username"]
+    names = [field, "user_name", "channel_username", "sender", "username"]
+    if platform == "telegram":
+        names.append("from_id")
+    names.append("user.username")
     out: list[str] = []
     for name in names:
         if not name:
@@ -372,39 +375,52 @@ def _fetch_from_index(
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
 ) -> list[Post]:
+    posts: list[Post] = []
+    for user_id in dict.fromkeys(user_ids):
+        remaining = size - len(posts)
+        if remaining <= 0:
+            break
+        posts.extend(_fetch_user_from_index(
+            platform, index, user_id, min(per_user, remaining),
+            start_date=start_date, end_date=end_date,
+        ))
+    return posts
+
+
+def _fetch_user_from_index(
+    platform: str,
+    index: str,
+    user_id: str,
+    limit: int,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+) -> list[Post]:
     fields = _fields_for(platform)
-    fetch_size = min(size, max(len(user_ids) * per_user, 10))
     body = {
-        "size": fetch_size,
+        "size": limit,
         "query": {
             "bool": {
                 "filter": _base_filters(
                     platform,
-                    user_ids,
+                    [user_id],
                     start_date=start_date,
                     end_date=end_date,
                 )
             }
         },
-        "_source": [
-            fields["user_id"],
-            fields["text"],
-            fields["timestamp"],
-            fields["post_id"],
-            fields.get("platform") or "platform",
-            "user_name",
+        "_source": list(dict.fromkeys([
+            *fields.values(),
+            *TEXT_FALLBACKS,
+            *USER_FALLBACKS,
+            "user",
             "user_title",
-            "username",
-            "normalized_text",
-            "text",
-            "content",
-            "message",
-            "caption",
+            "channel_title",
+            "platform",
             "date",
             "timestamp",
             "type",
             "entity.hashtag",
-        ],
+        ])),
         "sort": [{fields["timestamp"]: {"order": "desc"}}],
     }
     resp = _request("POST", f"/{index}/_search", body)
@@ -412,16 +428,12 @@ def _fetch_from_index(
     if not isinstance(hits, list):
         raise DataSourceError("The post source returned an invalid post search response.")
     posts: list[Post] = []
-    counts: dict[str, int] = {u: 0 for u in user_ids}
     for hit in hits:
         post = _source_to_post(str(hit.get("_id", "")), hit.get("_source") or {}, platform)
-        if not post:
-            continue
-        if counts.get(post.user_id, 0) >= per_user:
+        if not post or post.user_id != user_id:
             continue
         posts.append(post)
-        counts[post.user_id] = counts.get(post.user_id, 0) + 1
-        if len(posts) >= size:
+        if len(posts) >= limit:
             break
     return posts
 
