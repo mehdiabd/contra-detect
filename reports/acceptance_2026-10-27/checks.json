@@ -1,0 +1,1473 @@
+[
+  {
+    "name": "all_configured_indexes_and_model_ready",
+    "passed": true
+  },
+  {
+    "name": "twitter_single_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 2.908,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 1,
+        "has_contradiction": true,
+        "score": 0.8927,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_single_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 1.117,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 1,
+        "hit_count": 1
+      }
+    ]
+  },
+  {
+    "name": "twitter_single_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 1.042,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 1,
+        "score": 0.8927,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_single_cross_endpoint_consistency",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "twitter_multi_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 43.369,
+    "passed": false,
+    "errors": [
+      "twitter-02:source_counts_or_status"
+    ],
+    "cases": [
+      "twitter-01",
+      "twitter-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 1,
+        "has_contradiction": true,
+        "score": 0.8927,
+        "hit_count": 0
+      },
+      {
+        "analysis_status": "completed",
+        "post_count": 8,
+        "pair_count": 28,
+        "has_contradiction": false,
+        "score": 0.123,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_multi_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": null,
+    "seconds": 180.01,
+    "passed": false,
+    "errors": [
+      "ReadTimeout"
+    ],
+    "cases": [
+      "twitter-01",
+      "twitter-02"
+    ],
+    "results": []
+  },
+  {
+    "name": "twitter_multi_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 41.458,
+    "passed": false,
+    "errors": [
+      "twitter-02:source_counts_or_status"
+    ],
+    "cases": [
+      "twitter-01",
+      "twitter-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 1,
+        "score": 0.8927,
+        "hit_count": 0
+      },
+      {
+        "analysis_status": "completed",
+        "post_count": 8,
+        "pair_count": 28,
+        "score": 0.123,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_multi_cross_endpoint_consistency",
+    "passed": false,
+    "errors": [
+      "not_all_endpoints_available"
+    ]
+  },
+  {
+    "name": "twitter_explicit_empty_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.011,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "has_contradiction": null,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_explicit_empty_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.012,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_explicit_empty_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.01,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_missing_source_user",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 0.129,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "has_contradiction": null,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_invalid_date",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 422,
+    "seconds": 0.013,
+    "passed": true,
+    "errors": [],
+    "cases": [],
+    "results": []
+  },
+  {
+    "name": "telegram_single_contradiction",
+    "endpoint": "contradiction",
+    "platform": "telegram",
+    "mode": "live_elasticsearch",
+    "http_status": null,
+    "seconds": 180.025,
+    "passed": false,
+    "errors": [
+      "ReadTimeout"
+    ],
+    "cases": [
+      "telegram-01"
+    ],
+    "results": []
+  },
+  {
+    "name": "telegram_single_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "telegram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 13.747,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 45,
+        "hit_count": 4
+      }
+    ]
+  },
+  {
+    "name": "telegram_single_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "telegram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 12.804,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 45,
+        "score": 0.7522,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram_single_cross_endpoint_consistency",
+    "passed": false,
+    "errors": [
+      "not_all_endpoints_available"
+    ]
+  },
+  {
+    "name": "telegram_multi_contradiction",
+    "endpoint": "contradiction",
+    "platform": "telegram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 14.702,
+    "passed": false,
+    "errors": [
+      "telegram-02:source_counts_or_status"
+    ],
+    "cases": [
+      "telegram-01",
+      "telegram-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 45,
+        "has_contradiction": true,
+        "score": 0.7522,
+        "hit_count": 0
+      },
+      {
+        "analysis_status": "completed",
+        "post_count": 11,
+        "pair_count": 1,
+        "has_contradiction": false,
+        "score": 0.0282,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram_multi_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "telegram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 14.334,
+    "passed": false,
+    "errors": [
+      "telegram-02:source_counts_or_status"
+    ],
+    "cases": [
+      "telegram-01",
+      "telegram-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 45,
+        "hit_count": 4
+      },
+      {
+        "analysis_status": "completed",
+        "post_count": 11,
+        "pair_count": 1,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram_multi_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "telegram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 14.127,
+    "passed": false,
+    "errors": [
+      "telegram-02:source_counts_or_status"
+    ],
+    "cases": [
+      "telegram-01",
+      "telegram-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 45,
+        "score": 0.7522,
+        "hit_count": 0
+      },
+      {
+        "analysis_status": "completed",
+        "post_count": 11,
+        "pair_count": 1,
+        "score": 0.0282,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram_multi_cross_endpoint_consistency",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "telegram_explicit_empty_contradiction",
+    "endpoint": "contradiction",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.025,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "has_contradiction": null,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram_explicit_empty_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.009,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram_explicit_empty_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.009,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram_missing_source_user",
+    "endpoint": "contradiction",
+    "platform": "telegram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 0.356,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "has_contradiction": null,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram_invalid_date",
+    "endpoint": "contradiction",
+    "platform": "telegram",
+    "mode": "live_elasticsearch",
+    "http_status": 422,
+    "seconds": 0.012,
+    "passed": true,
+    "errors": [],
+    "cases": [],
+    "results": []
+  },
+  {
+    "name": "instagram_single_contradiction",
+    "endpoint": "contradiction",
+    "platform": "instagram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 3.977,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 7,
+        "pair_count": 6,
+        "has_contradiction": true,
+        "score": 0.661,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram_single_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "instagram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 3.938,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 7,
+        "pair_count": 6,
+        "hit_count": 1
+      }
+    ]
+  },
+  {
+    "name": "instagram_single_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "instagram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 3.937,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 7,
+        "pair_count": 6,
+        "score": 0.661,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram_single_cross_endpoint_consistency",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "instagram_multi_contradiction",
+    "endpoint": "contradiction",
+    "platform": "instagram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 19.367,
+    "passed": false,
+    "errors": [
+      "instagram-01:source_counts_or_status"
+    ],
+    "cases": [
+      "instagram-01",
+      "instagram-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 6,
+        "pair_count": 3,
+        "has_contradiction": true,
+        "score": 0.661,
+        "hit_count": 0
+      },
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 3,
+        "has_contradiction": true,
+        "score": 0.6244,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram_multi_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "instagram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 19.555,
+    "passed": false,
+    "errors": [
+      "instagram-01:source_counts_or_status"
+    ],
+    "cases": [
+      "instagram-01",
+      "instagram-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 6,
+        "pair_count": 3,
+        "hit_count": 1
+      },
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 3,
+        "hit_count": 1
+      }
+    ]
+  },
+  {
+    "name": "instagram_multi_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "instagram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 19.378,
+    "passed": false,
+    "errors": [
+      "instagram-01:source_counts_or_status"
+    ],
+    "cases": [
+      "instagram-01",
+      "instagram-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 6,
+        "pair_count": 3,
+        "score": 0.661,
+        "hit_count": 0
+      },
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 3,
+        "score": 0.6244,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram_multi_cross_endpoint_consistency",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "instagram_explicit_empty_contradiction",
+    "endpoint": "contradiction",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.011,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "has_contradiction": null,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram_explicit_empty_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.009,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram_explicit_empty_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.012,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram_missing_source_user",
+    "endpoint": "contradiction",
+    "platform": "instagram",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 0.109,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "has_contradiction": null,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram_invalid_date",
+    "endpoint": "contradiction",
+    "platform": "instagram",
+    "mode": "live_elasticsearch",
+    "http_status": 422,
+    "seconds": 0.01,
+    "passed": true,
+    "errors": [],
+    "cases": [],
+    "results": []
+  },
+  {
+    "name": "twitter-01_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 8.02,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": false,
+        "score": 0.0882,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter-01_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 8.633,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter-02_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 10.253,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": false,
+        "score": 0.1091,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter-02_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 11.065,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter-03_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 8.489,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-03"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": false,
+        "score": 0.1366,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter-03_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 8.485,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-03"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter-04_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 2.208,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-04"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": false,
+        "score": 0.0661,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter-04_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 1.998,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-04"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter-05_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 7.181,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-05"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": false,
+        "score": 0.0453,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter-05_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 6.768,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-05"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram-01_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 2.139,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": false,
+        "score": 0.0525,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram-01_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 2.401,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram-02_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 1.745,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": true,
+        "score": 0.5848,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram-02_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 1.428,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 1
+      }
+    ]
+  },
+  {
+    "name": "telegram-03_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 1.948,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-03"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": false,
+        "score": 0.0651,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram-03_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 1.828,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-03"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram-01_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 1.63,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 2,
+        "has_contradiction": false,
+        "score": 0.1268,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram-01_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 1.607,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 2,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram-02_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 5.649,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 1,
+        "has_contradiction": false,
+        "score": 0.0144,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram-02_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 5.622,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-02"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 1,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram-03_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 3.986,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-03"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 4,
+        "has_contradiction": true,
+        "score": 0.5692,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram-03_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 3.879,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-03"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 4,
+        "hit_count": 1
+      }
+    ]
+  },
+  {
+    "name": "telegram-04_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 4.498,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-04"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": false,
+        "score": 0.1145,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram-04_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 4.395,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-04"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram-05_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 2.037,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-05"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": true,
+        "score": 0.6107,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "telegram-05_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "telegram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 1.732,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "telegram-05"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 1
+      }
+    ]
+  },
+  {
+    "name": "instagram-04_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 5.212,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-04"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": true,
+        "score": 0.657,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram-04_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 5.22,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-04"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 1
+      }
+    ]
+  },
+  {
+    "name": "instagram-05_frozen_contradiction",
+    "endpoint": "contradiction",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 29.577,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-05"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "has_contradiction": false,
+        "score": 0.1183,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "instagram-05_frozen_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "instagram",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 30.306,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "instagram-05"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 4,
+        "pair_count": 6,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "release_unchanged_during_run",
+    "passed": true
+  }
+]

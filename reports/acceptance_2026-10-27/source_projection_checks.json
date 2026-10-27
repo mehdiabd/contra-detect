@@ -1,0 +1,37 @@
+[
+  {
+    "index": "twitter_temp_data",
+    "sample_size": 300,
+    "raw_valid": 300,
+    "old_projection_valid": 300,
+    "fixed_projection_valid": 300
+  },
+  {
+    "index": "telegram_comment_data",
+    "sample_size": 300,
+    "raw_valid": 292,
+    "old_projection_valid": 0,
+    "fixed_projection_valid": 292
+  },
+  {
+    "index": "instagram_temp_data",
+    "sample_size": 300,
+    "raw_valid": 298,
+    "old_projection_valid": 298,
+    "fixed_projection_valid": 298
+  },
+  {
+    "index": "instagram_comment_data",
+    "sample_size": 300,
+    "raw_valid": 300,
+    "old_projection_valid": 300,
+    "fixed_projection_valid": 300
+  },
+  {
+    "index": "telegram_temp_data",
+    "sample_size": 300,
+    "raw_valid": 276,
+    "old_projection_valid": 276,
+    "fixed_projection_valid": 276
+  }
+]

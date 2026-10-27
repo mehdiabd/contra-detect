@@ -1,0 +1,595 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CONTRA-Detect API",
+    "description": "Detection of user-level verbal contradictions across X, Telegram, and Instagram.",
+    "version": "1.1.1"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo": {
+      "get": {
+        "summary": "Demo",
+        "description": "Controlled sample: one user per platform (X, Telegram, Instagram).",
+        "operationId": "demo_api_v1_demo_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/contradiction": {
+      "post": {
+        "summary": "Detect Contradiction",
+        "operationId": "detect_contradiction_api_v1_users_contradiction_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResponse_ContradictionResult_"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/contradictory-posts": {
+      "post": {
+        "summary": "Extract Contradictory Posts",
+        "operationId": "extract_contradictory_posts_api_v1_users_contradictory_posts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResponse_ContradictoryPostsResult_"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/contradiction-score": {
+      "post": {
+        "summary": "Contradiction Score",
+        "operationId": "contradiction_score_api_v1_users_contradiction_score_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResponse_ScoreResult_"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnalysisError": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "data_source_unavailable",
+              "analysis_failed"
+            ],
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "AnalysisError"
+      },
+      "AnalysisResponse_ContradictionResult_": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ContradictionResult"
+            },
+            "type": "array",
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "title": "AnalysisResponse[ContradictionResult]"
+      },
+      "AnalysisResponse_ContradictoryPostsResult_": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ContradictoryPostsResult"
+            },
+            "type": "array",
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "title": "AnalysisResponse[ContradictoryPostsResult]"
+      },
+      "AnalysisResponse_ScoreResult_": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreResult"
+            },
+            "type": "array",
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "title": "AnalysisResponse[ScoreResult]"
+      },
+      "AnalysisStatus": {
+        "type": "string",
+        "enum": [
+          "completed",
+          "insufficient_data"
+        ],
+        "title": "AnalysisStatus"
+      },
+      "AnalyzeRequest": {
+        "properties": {
+          "user_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "User Ids"
+          },
+          "platform_name": {
+            "type": "string",
+            "title": "Platform Name"
+          },
+          "date_range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DateRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "posts": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PostIn"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Posts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "platform_name"
+        ],
+        "title": "AnalyzeRequest"
+      },
+      "ContradictionResult": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "analysis_status": {
+            "$ref": "#/components/schemas/AnalysisStatus",
+            "description": "completed only when at least one post pair was analyzed"
+          },
+          "post_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Post Count"
+          },
+          "pair_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Pair Count"
+          },
+          "has_contradiction": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has Contradiction",
+            "description": "null when there is insufficient data"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score",
+            "description": "null when there is insufficient data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "analysis_status",
+          "post_count",
+          "pair_count",
+          "has_contradiction",
+          "score"
+        ],
+        "title": "ContradictionResult"
+      },
+      "ContradictoryPostsResult": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "analysis_status": {
+            "$ref": "#/components/schemas/AnalysisStatus",
+            "description": "completed only when at least one post pair was analyzed"
+          },
+          "post_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Post Count"
+          },
+          "pair_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Pair Count"
+          },
+          "contradictory_posts": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Contradictory Posts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "analysis_status",
+          "post_count",
+          "pair_count",
+          "contradictory_posts"
+        ],
+        "title": "ContradictoryPostsResult"
+      },
+      "DateRange": {
+        "properties": {
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "title": "DateRange"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "detail": {
+            "$ref": "#/components/schemas/AnalysisError"
+          }
+        },
+        "type": "object",
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "PostIn": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "platform": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform"
+          },
+          "post_id": {
+            "type": "string",
+            "title": "Post Id",
+            "default": ""
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "text"
+        ],
+        "title": "PostIn"
+      },
+      "ScoreResult": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "analysis_status": {
+            "$ref": "#/components/schemas/AnalysisStatus",
+            "description": "completed only when at least one post pair was analyzed"
+          },
+          "post_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Post Count"
+          },
+          "pair_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Pair Count"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score",
+            "description": "null when there is insufficient data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "analysis_status",
+          "post_count",
+          "pair_count",
+          "score"
+        ],
+        "title": "ScoreResult"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

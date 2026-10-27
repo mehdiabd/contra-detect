@@ -66,4 +66,3 @@ class ElasticsearchUserCoverageTests(TestCase):
         with patch("src.data.elastic._request", side_effect=[{"hits": {"hits": []}}, DataSourceError("offline")]):
             with self.assertRaises(DataSourceError):
                 elastic._fetch_from_index("twitter", "posts", ["a", "b"], 15, 100)
-

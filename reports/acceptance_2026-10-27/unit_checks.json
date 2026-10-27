@@ -1,0 +1,7 @@
+{
+  "command": ".venv/bin/python -m unittest discover -s tests -p test_*.py",
+  "tests": 52,
+  "passed": 52,
+  "exit_code": 0,
+  "scope": "Runtime regression and acceptance-tool correctness; no mocked data is used as human gold."
+}

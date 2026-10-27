@@ -1,0 +1,18 @@
+[
+  {
+    "name": "twitter_multi_contradictory-posts_one_retry",
+    "http_status": 200,
+    "seconds": 40.42,
+    "passed": false,
+    "errors": [
+      "twitter-02:source_counts_or_status"
+    ]
+  },
+  {
+    "name": "telegram_single_contradiction_one_retry",
+    "http_status": 200,
+    "seconds": 13.236,
+    "passed": true,
+    "errors": []
+  }
+]

@@ -1,0 +1,37 @@
+{
+  "created_date": "2026-10-27",
+  "seed": 20261027,
+  "case_count": 15,
+  "users_by_platform": {
+    "twitter": 5,
+    "telegram": 5,
+    "instagram": 5
+  },
+  "source_posts": 187,
+  "review_posts": 60,
+  "review_pairs": 90,
+  "window": {
+    "start_date": "2026-10-01",
+    "end_date": "2026-10-26"
+  },
+  "cases_sha256": "51776f850171bff9db0b98e18bdf71b556e55087c74d07f0408b118fe71655bc",
+  "cases_file_sha256": "833386464180f3988d576124ea9bd20a3ce46a66ff291d2db1066cb373cd3877",
+  "discovery_file_sha256": "99ac937df34cb3c87dfdc52d95c2cf7d3ab6e8496a86f9127df45e8ada64484e",
+  "discovery_counts": {
+    "twitter_temp_data": 300,
+    "telegram_comment_data": 300,
+    "instagram_temp_data": 300,
+    "instagram_comment_data": 300,
+    "telegram_temp_data": 300
+  },
+  "predictions_file_sha256": "6ffee380e1d0f4c1c153e69c8ae00c3e1d94a6d2323c25b73b58e6fd62ccfd66",
+  "model_manifest_sha256": "ce9cd029e136f31d195edf26c2c0e8951f5cbf8aa645b3c5c103245298789da1",
+  "production_fix_commit": "e4f62c348f769bba95b8620851181fd506a61b18",
+  "sampling_method": "Deterministic SHA256 ordering with seed 20261027 among recent source users; up to 30 candidates per stratum; at least four distinct Persian texts; four posts selected by seeded SHA256, independently of predictions.",
+  "limitations": [
+    "Recent-active-account convenience sample, not a representative probability sample.",
+    "Comment strata did not yield eligible four-post cases; final human sample uses primary post indexes only.",
+    "Pair labels are binary social-media contradictions, unlike three-class FarsTail NLI.",
+    "No human gold labels yet; no social-media accuracy result."
+  ]
+}
