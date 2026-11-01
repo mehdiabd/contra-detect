@@ -1,11 +1,13 @@
 import copy
+import json
 import tempfile
 from pathlib import Path
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
 from scripts.acceptance_review import binary_metrics, fingerprint, review_pairs, score
-from scripts.run_acceptance import AcceptanceRun, check_rows, compare_endpoints
+from scripts.run_acceptance import AcceptanceRun, GatewayTimeoutError, check_rows, compare_endpoints
+from src.data.schema import Post
 
 
 class AcceptanceEvaluationTests(TestCase):
@@ -64,3 +66,46 @@ class AcceptanceEvaluationTests(TestCase):
             run.session.post.return_value.json.return_value = []
             self.assertIsNone(run.request("malformed", "contradiction", {"platform_name": "twitter"}, []))
             self.assertFalse(run.checks[0]["passed"])
+
+    def test_gateway_timeout_preserves_evidence_and_an_incomplete_summary(self):
+        with tempfile.TemporaryDirectory() as directory:
+            run = AcceptanceRun("https://example.invalid", Path(directory)/"public", Path(directory)/"private")
+            run.session = Mock()
+            run.session.post.return_value.status_code = 504
+            run.session.post.return_value.json.return_value = {"message": "The upstream server is timing out"}
+            (run.output/"health.json").write_text(json.dumps({"model": {"release": {"verified": True}}}))
+            (run.output/"openapi.json").write_text(json.dumps({"info": {"version": "1.1.2"}}))
+            with self.assertRaises(GatewayTimeoutError):
+                run.request("gateway", "contradiction", {"platform_name": "twitter"}, [])
+            summary = run.summarize([], completed=False, stopped_reason="gateway_http_504")
+            self.assertFalse(summary["completed"])
+            self.assertEqual(summary["failed"], 1)
+            self.assertEqual(len(json.loads((run.private/"api_receipts.json").read_text())), 1)
+
+    def test_client_timeout_is_configurable_and_must_be_positive(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output, private = Path(directory)/"public", Path(directory)/"private"
+            with self.assertRaises(ValueError):
+                AcceptanceRun("https://example.invalid", output, private, request_timeout=0)
+            run = AcceptanceRun("https://example.invalid", output, private, request_timeout=330)
+            run.session = Mock()
+            run.session.post.return_value.status_code = 422
+            run.session.post.return_value.json.return_value = {"detail": []}
+            run.request("invalid_dates", "contradiction", {"platform_name": "twitter"}, [], expected_status=422)
+            self.assertEqual(run.session.post.call_args.kwargs["timeout"], 330)
+
+    def test_live_reference_refresh_preserves_the_blind_review_snapshot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            run = AcceptanceRun("https://example.invalid", Path(directory)/"public", Path(directory)/"private",
+                                refresh_source_reference=True)
+            case = {**copy.deepcopy(self.cases[0]), "source_posts": [],
+                    "date_range": {"start_date": "2026-10-01", "end_date": "2026-10-26"}}
+            original_hash = fingerprint(case)
+            post = Post(user_id="u", text="نوشتهٔ مرجع فعلی", post_id="new")
+            with patch("src.data.elastic.fetch_posts", return_value=[post]) as fetch:
+                current = run.current_source_case(case)
+            self.assertEqual(fingerprint(case), original_hash)
+            self.assertEqual(current["review_posts"], case["review_posts"])
+            self.assertEqual(current["source_posts"], [post.to_dict()])
+            self.assertEqual(fetch.call_args.args[0], ["u"])
+            self.assertTrue((run.private/"source_reference.json").is_file())

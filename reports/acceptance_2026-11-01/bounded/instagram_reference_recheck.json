@@ -1,0 +1,36 @@
+{
+  "scope": "Independent current ES reads versus already recorded API responses; original snapshot and failures retained.",
+  "source_comparison": [
+    {
+      "case_id": "instagram-02",
+      "old_post_count": 15,
+      "current_direct_post_count": 15,
+      "added_or_changed_posts": 2,
+      "removed_or_changed_posts": 2
+    },
+    {
+      "case_id": "instagram-03",
+      "old_post_count": 4,
+      "current_direct_post_count": 5,
+      "added_or_changed_posts": 1,
+      "removed_or_changed_posts": 0
+    }
+  ],
+  "rechecks": [
+    {
+      "name": "instagram_bounded_contradiction",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "instagram_bounded_contradictory-posts",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "instagram_bounded_contradiction-score",
+      "passed": true,
+      "errors": []
+    }
+  ]
+}

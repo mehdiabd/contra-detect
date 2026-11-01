@@ -1,0 +1,236 @@
+[
+  {
+    "name": "all_configured_indexes_and_model_ready",
+    "passed": true
+  },
+  {
+    "name": "twitter_single_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 1.479,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 1,
+        "has_contradiction": true,
+        "score": 0.8927,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_single_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 1.633,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 1,
+        "hit_count": 1
+      }
+    ]
+  },
+  {
+    "name": "twitter_single_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 1.34,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "completed",
+        "post_count": 15,
+        "pair_count": 1,
+        "score": 0.8927,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_single_cross_endpoint_consistency",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "twitter_multi_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 504,
+    "seconds": 60.015,
+    "passed": false,
+    "errors": [
+      "unexpected_http_504"
+    ],
+    "cases": [
+      "twitter-01",
+      "twitter-02"
+    ],
+    "results": []
+  },
+  {
+    "name": "twitter_multi_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 504,
+    "seconds": 60.025,
+    "passed": false,
+    "errors": [
+      "unexpected_http_504"
+    ],
+    "cases": [
+      "twitter-01",
+      "twitter-02"
+    ],
+    "results": []
+  },
+  {
+    "name": "twitter_multi_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 504,
+    "seconds": 60.019,
+    "passed": false,
+    "errors": [
+      "unexpected_http_504"
+    ],
+    "cases": [
+      "twitter-01",
+      "twitter-02"
+    ],
+    "results": []
+  },
+  {
+    "name": "twitter_multi_cross_endpoint_consistency",
+    "passed": false,
+    "errors": [
+      "not_all_endpoints_available"
+    ]
+  },
+  {
+    "name": "twitter_explicit_empty_contradiction",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.03,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "has_contradiction": null,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_explicit_empty_contradictory-posts",
+    "endpoint": "contradictory-posts",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.066,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_explicit_empty_contradiction-score",
+    "endpoint": "contradiction-score",
+    "platform": "twitter",
+    "mode": "frozen_posts",
+    "http_status": 200,
+    "seconds": 0.028,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_missing_source_user",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 200,
+    "seconds": 0.473,
+    "passed": true,
+    "errors": [],
+    "cases": [
+      "twitter-01"
+    ],
+    "results": [
+      {
+        "analysis_status": "insufficient_data",
+        "post_count": 0,
+        "pair_count": 0,
+        "has_contradiction": null,
+        "score": null,
+        "hit_count": 0
+      }
+    ]
+  },
+  {
+    "name": "twitter_invalid_date",
+    "endpoint": "contradiction",
+    "platform": "twitter",
+    "mode": "live_elasticsearch",
+    "http_status": 422,
+    "seconds": 0.019,
+    "passed": true,
+    "errors": [],
+    "cases": [],
+    "results": []
+  }
+]
