@@ -1,0 +1,12 @@
+{
+  "index": "telegram_temp_data",
+  "status": "ok",
+  "date_range": {
+    "start_date": "2026-10-26",
+    "end_date": "2026-10-26"
+  },
+  "hits": 300,
+  "elasticsearch_took_ms": 478,
+  "track_total_hits": false,
+  "timeout_seconds": 20
+}

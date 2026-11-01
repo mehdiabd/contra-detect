@@ -1,0 +1,156 @@
+{
+  "status": "ok",
+  "model_source": "/opt/contra-detect/models/saved/best_model",
+  "model": {
+    "sources": [
+      "/opt/contra-detect/models/saved/targeted_v1",
+      "/opt/contra-detect/models/saved/parsnlu_farstail",
+      "/opt/contra-detect/models/saved/mdeberta_nli"
+    ],
+    "weights": [
+      0.25,
+      0.25,
+      0.5
+    ],
+    "max_length": 512,
+    "release": {
+      "release_id": "farstail-ensemble-8593-v1",
+      "verified": true,
+      "manifest_sha256": "ce9cd029e136f31d195edf26c2c0e8951f5cbf8aa645b3c5c103245298789da1",
+      "verified_files": 15,
+      "members": [
+        {
+          "name": "current",
+          "weight": 0.25,
+          "model_sha256": "bc6e599394a0f072cfcecf41e1b20ff0d36e467003a68411e7884458a4e0e011"
+        },
+        {
+          "name": "parsnlu",
+          "weight": 0.25,
+          "model_sha256": "f93fb80df27d6c7a2fe9b9aa8ab942bda9b2ed02b0c13e7a202c4ec279ccd0c1"
+        },
+        {
+          "name": "mdeberta",
+          "weight": 0.5,
+          "model_sha256": "7c8e29f1115986d032e92b0fbaa0bdef1062a46f658b08705f237c05014a8541"
+        }
+      ],
+      "evaluation": {
+        "dataset": "FarsTail",
+        "split": "test",
+        "scope": "three_class_nli_on_labeled_pairs",
+        "n": 1564,
+        "correct": 1344,
+        "accuracy": 0.8593350383631714,
+        "per_class": {
+          "entailment": {
+            "precision": 0.8140703517587939,
+            "recall": 0.9364161849710982,
+            "f1": 0.8709677419354839,
+            "support": 519
+          },
+          "contradiction": {
+            "precision": 0.871264367816092,
+            "recall": 0.7431372549019608,
+            "f1": 0.8021164021164022,
+            "support": 510
+          },
+          "neutral": {
+            "precision": 0.900375939849624,
+            "recall": 0.8953271028037383,
+            "f1": 0.8978444236176195,
+            "support": 535
+          }
+        },
+        "confusion_matrix": [
+          [
+            486,
+            23,
+            10
+          ],
+          [
+            88,
+            379,
+            43
+          ],
+          [
+            23,
+            33,
+            479
+          ]
+        ],
+        "matrix_order": [
+          "entailment",
+          "contradiction",
+          "neutral"
+        ],
+        "runtime_seconds": 158.729,
+        "device": "cpu",
+        "test_data_sha256": "d0dd25408036e5dd8587a8e0d98585b46b4a7d0057fece0992fb8d490ad44f4f",
+        "limitation": "The test was inspected in earlier project work; this result is not an independent social-media acceptance evaluation."
+      }
+    }
+  },
+  "es_enabled": true,
+  "es_indexes": {
+    "twitter": [
+      "twitter_temp_data"
+    ],
+    "telegram": [
+      "telegram_temp_data",
+      "telegram_source",
+      "telegram_comment_data"
+    ],
+    "instagram": [
+      "instagram_temp_data",
+      "instagram_source",
+      "instagram_comment_data"
+    ]
+  },
+  "elasticsearch": {
+    "ok": true,
+    "indexes": {
+      "twitter": [
+        {
+          "ok": true,
+          "index": "twitter_temp_data",
+          "docs": 207049847
+        }
+      ],
+      "telegram": [
+        {
+          "ok": true,
+          "index": "telegram_temp_data",
+          "docs": 1846126956
+        },
+        {
+          "ok": true,
+          "index": "telegram_source",
+          "docs": 90193
+        },
+        {
+          "ok": true,
+          "index": "telegram_comment_data",
+          "docs": 164027412
+        }
+      ],
+      "instagram": [
+        {
+          "ok": true,
+          "index": "instagram_temp_data",
+          "docs": 15847053
+        },
+        {
+          "ok": true,
+          "index": "instagram_source",
+          "docs": 2989494
+        },
+        {
+          "ok": true,
+          "index": "instagram_comment_data",
+          "docs": 3831818
+        }
+      ]
+    }
+  }
+}

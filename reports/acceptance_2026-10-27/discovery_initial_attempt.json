@@ -1,0 +1,61 @@
+{
+  "twitter_temp_data": {
+    "status": "ok",
+    "hits": 300,
+    "parsed_posts": 300,
+    "unique_users": 261,
+    "users_with_multiple_posts": 22,
+    "first_date": "2026-10-27T06:15:30Z",
+    "last_date": "2026-10-27T06:05:34Z",
+    "text_field_counts": {
+      "normalized_text": 300,
+      "text": 300,
+      "comment": 300
+    }
+  },
+  "telegram_temp_data": {
+    "status": "failed",
+    "error_type": "DataSourceError",
+    "status_code": null
+  },
+  "telegram_comment_data": {
+    "status": "ok",
+    "hits": 300,
+    "parsed_posts": 292,
+    "unique_users": 166,
+    "users_with_multiple_posts": 61,
+    "first_date": "2026-10-27T06:18:04+00:00",
+    "last_date": "2026-10-27T06:00:54+00:00",
+    "text_field_counts": {
+      "normalized_text": 292,
+      "text": 300
+    }
+  },
+  "instagram_temp_data": {
+    "status": "ok",
+    "hits": 300,
+    "parsed_posts": 298,
+    "unique_users": 291,
+    "users_with_multiple_posts": 7,
+    "first_date": "2026-10-27T06:02:54Z",
+    "last_date": "2026-10-26T17:52:06Z",
+    "text_field_counts": {
+      "normalized_text": 298,
+      "text": 300,
+      "comment": 300
+    }
+  },
+  "instagram_comment_data": {
+    "status": "ok",
+    "hits": 300,
+    "parsed_posts": 300,
+    "unique_users": 235,
+    "users_with_multiple_posts": 39,
+    "first_date": "2026-10-23T08:02:47Z",
+    "last_date": "2026-10-01T20:59:38Z",
+    "text_field_counts": {
+      "normalized_text": 300,
+      "text": 300
+    }
+  }
+}

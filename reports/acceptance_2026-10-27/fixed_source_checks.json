@@ -1,0 +1,43 @@
+[
+  {
+    "name": "twitter-01_fixed_live_source",
+    "expected_post_count": 15,
+    "observed_post_count": 15,
+    "passed": true
+  },
+  {
+    "name": "twitter-02_fixed_live_source",
+    "expected_post_count": 15,
+    "observed_post_count": 15,
+    "passed": true
+  },
+  {
+    "name": "telegram-01_fixed_live_source",
+    "expected_post_count": 15,
+    "observed_post_count": 15,
+    "passed": true
+  },
+  {
+    "name": "telegram-02_fixed_live_source",
+    "expected_post_count": 13,
+    "observed_post_count": 13,
+    "passed": true
+  },
+  {
+    "name": "instagram-01_fixed_live_source",
+    "expected_post_count": 7,
+    "observed_post_count": 7,
+    "passed": true
+  },
+  {
+    "name": "instagram-02_fixed_live_source",
+    "expected_post_count": 15,
+    "observed_post_count": 15,
+    "passed": true
+  },
+  {
+    "name": "telegram_comment_from_id_fixed_live_source",
+    "passed": true,
+    "observed_post_count": 9
+  }
+]

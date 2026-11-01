@@ -1,0 +1,13 @@
+{
+  "completed_at_utc": "2026-10-27T07:01:46.427844+00:00",
+  "api_url": "https://contra-detect-api.stinascloud.ir",
+  "api_version": "1.1.1",
+  "release_id": "farstail-ensemble-8593-v1",
+  "manifest_sha256": "ce9cd029e136f31d195edf26c2c0e8951f5cbf8aa645b3c5c103245298789da1",
+  "cases_sha256": "51776f850171bff9db0b98e18bdf71b556e55087c74d07f0408b118fe71655bc",
+  "checks": 71,
+  "passed": 59,
+  "failed": 12,
+  "accuracy_status": "awaiting_independent_human_labels",
+  "scope": "operational_checks_and_frozen_social_media_pilot_not_organizational_acceptance"
+}
