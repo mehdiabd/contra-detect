@@ -19,9 +19,12 @@ class FeedbackPromotionTests(TestCase):
         member.mkdir()
         (experiment/"candidate").mkdir(parents=True)
         config = {"model_type": "deberta-v2", "hidden_size": 1, "vocab_size": 2,
-                  "max_position_embeddings": 4, "id2label": {"0": "entailment", "1": "neutral", "2": "contradiction"}}
+                  "max_position_embeddings": 4, "torch_dtype": "float16",
+                  "id2label": {"0": "entailment", "1": "neutral", "2": "contradiction"}}
         atomic_json(member/"config.json", config)
-        atomic_json(experiment/"candidate/config.json", config)
+        candidate_config = {k: v for k, v in config.items() if k != "torch_dtype"}
+        candidate_config["dtype"] = "float32"
+        atomic_json(experiment/"candidate/config.json", candidate_config)
         for name in ("tokenizer.json", "tokenizer_config.json"):
             (member/name).write_text("{}")
         save_file({"weight": torch.tensor([1.], dtype=torch.float16),
@@ -54,6 +57,9 @@ class FeedbackPromotionTests(TestCase):
             self.assertEqual(file_sha256(models/"saved/mdeberta_nli/model.safetensors"), report["candidate_model_sha256"])
             self.assertEqual(file_sha256(experiment/"production_before_promotion.safetensors"), old_hash)
             self.assertEqual(verify_model_release(models/"saved/best_model")["release_id"], "new")
+            deployed = json.loads((models/"saved/mdeberta_nli/config.json").read_text())
+            self.assertEqual(deployed["dtype"], "float32")
+            self.assertNotIn("torch_dtype", deployed)
 
     def test_failed_quality_gate_cannot_modify_the_release(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -79,10 +85,12 @@ class FeedbackPromotionTests(TestCase):
         with tempfile.TemporaryDirectory() as directory:
             models, experiment, report = self.fixture(Path(directory))
             old_weights = file_sha256(models/"saved/mdeberta_nli/model.safetensors")
+            old_config = file_sha256(models/"saved/mdeberta_nli/config.json")
             info = verify_model_release(models/"saved/best_model")
             with patch("scripts.promote_human_feedback.verify_model_release", side_effect=[info, ValueError("verification failed")]):
                 with self.assertRaises(ValueError):
                     promote(experiment, models, "new")
             self.assertEqual(file_sha256(models/"saved/mdeberta_nli/model.safetensors"), old_weights)
+            self.assertEqual(file_sha256(models/"saved/mdeberta_nli/config.json"), old_config)
             self.assertEqual(file_sha256(models/"release.json"), report["base_manifest_sha256"])
             self.assertTrue(verify_model_release(models/"saved/best_model")["verified"])

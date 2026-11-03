@@ -41,8 +41,8 @@
       "sha256": "66ef102fd94116e6b07cd9cc65113acaa74400fb1c7d3a813c5ac28dba22d72d"
     },
     "saved/mdeberta_nli/config.json": {
-      "bytes": 1093,
-      "sha256": "bc7b85f164a17c1b007d87fb99d3676f4a4d2e6511d2288dd3f5334dc0f34e6b"
+      "bytes": 1087,
+      "sha256": "0fb665d8ef02bb3d0645e54fe0ff65d6533faff7cbd84ab286613e57beca3f8b"
     },
     "saved/mdeberta_nli/model.safetensors": {
       "bytes": 1115271284,

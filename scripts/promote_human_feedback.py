@@ -26,6 +26,18 @@ def atomic_json(path: Path, payload: dict) -> None:
     os.replace(temporary, path)
 
 
+def deployment_config(previous: dict, candidate: dict) -> dict:
+    """Keep architecture settings while loading trained parameters at their evaluated precision."""
+    result = dict(previous)
+    dtype = candidate.get("dtype") or candidate.get("torch_dtype")
+    if dtype:
+        result.pop("torch_dtype", None)
+        result["dtype"] = dtype
+    if candidate.get("transformers_version"):
+        result["transformers_version"] = candidate["transformers_version"]
+    return result
+
+
 def promote(experiment: Path, models: Path, release_id: str) -> dict:
     report = json.loads((experiment / "training_report.json").read_text())
     gates = report.get("promotion_gates") or {}
@@ -77,6 +89,7 @@ def promote(experiment: Path, models: Path, release_id: str) -> dict:
         shutil.copyfile(candidate, temporary)
     os.replace(temporary, destination)
     try:
+        atomic_json(destination.parent / "config.json", deployment_config(old_config, new_config))
         files = {relative: {"bytes": (models / relative).stat().st_size, "sha256": file_sha256(models / relative)}
                  for relative in old_manifest["files"]}
         evaluation = {"dataset": "FarsTail", "split": "test", "scope": "three_class_nli_on_labeled_pairs",
@@ -99,6 +112,7 @@ def promote(experiment: Path, models: Path, release_id: str) -> dict:
         rollback = destination.with_suffix(".rollback")
         os.link(backup, rollback)
         os.replace(rollback, destination)
+        atomic_json(destination.parent / "config.json", old_config)
         atomic_json(manifest_path, old_manifest)
         raise
     result = {"release_id": verified["release_id"], "verified": True,

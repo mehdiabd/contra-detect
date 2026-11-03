@@ -469,10 +469,11 @@
   "local_promotion": {
     "release_id": "farstail-human-feedback-20261103-v1",
     "verified": true,
-    "manifest_sha256": "2108869670cd7ebab214aa879070432d3f154c14cb58418a8a7e9fe5a3347cd7",
+    "manifest_sha256": "1de877921830a7d9385e66affc9d7efdf3411172bf149c03765227c3d659f786",
     "local_release_updated": true,
     "server_deployed": false,
-    "candidate_model_sha256": "9a39b50f7c25e980106f3102deb62f14e786cc795b678649854d0838ed7fcf1f"
+    "candidate_model_sha256": "9a39b50f7c25e980106f3102deb62f14e786cc795b678649854d0838ed7fcf1f",
+    "load_dtype": "float32"
   },
   "runtime": {
     "python": "3.10.0",
@@ -481,5 +482,16 @@
     "threads": 4,
     "device": "cpu"
   },
-  "original_training_report_sha256": "e9a03d141ebeefcf463262b9424a41943db57ccdb1de298af0475bd50af54371"
+  "original_training_report_sha256": "e9a03d141ebeefcf463262b9424a41943db57ccdb1de298af0475bd50af54371",
+  "runtime_parameter_parity": {
+    "all_parameter_values_identical_to_evaluated_checkpoint": true,
+    "state_tensor_count": 202,
+    "dtypes": {
+      "torch.float32": 202
+    },
+    "config_equivalent": true,
+    "tokenizer_pairs_equivalent": 1654,
+    "manifest_sha256": "1de877921830a7d9385e66affc9d7efdf3411172bf149c03765227c3d659f786",
+    "model_sha256": "9a39b50f7c25e980106f3102deb62f14e786cc795b678649854d0838ed7fcf1f"
+  }
 }
