@@ -1,0 +1,11 @@
+{
+  "all_parameter_values_identical_to_evaluated_checkpoint": true,
+  "state_tensor_count": 202,
+  "dtypes": {
+    "torch.float32": 202
+  },
+  "config_equivalent": true,
+  "tokenizer_pairs_equivalent": 1654,
+  "manifest_sha256": "1de877921830a7d9385e66affc9d7efdf3411172bf149c03765227c3d659f786",
+  "model_sha256": "9a39b50f7c25e980106f3102deb62f14e786cc795b678649854d0838ed7fcf1f"
+}

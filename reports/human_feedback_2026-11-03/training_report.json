@@ -1,0 +1,497 @@
+{
+  "seed": 20261103,
+  "epochs_requested": 3,
+  "epochs_completed": 3,
+  "learning_rate": 1e-05,
+  "batch_size": 8,
+  "max_length": 512,
+  "replay_per_class": 200,
+  "feedback_repeat": 4,
+  "heldout_pairs_excluded_from_replay": true,
+  "training_records_sha256": "f7ac13b868f14accf070d6f746e9a40f356ef878a4962e8e772eef9285c2cf52",
+  "base_release": "farstail-ensemble-8593-v1",
+  "base_manifest_sha256": "ce9cd029e136f31d195edf26c2c0e8951f5cbf8aa645b3c5c103245298789da1",
+  "feedback": {
+    "cases_sha256": "51776f850171bff9db0b98e18bdf71b556e55087c74d07f0408b118fe71655bc",
+    "review_sha256": "f4d8fcdc607b8d7919be062d276bcc439415619e397b1074b0233f9e1d10bbcb",
+    "annotated": 90,
+    "usable": 72,
+    "uncertain_excluded": 18,
+    "positive": 0,
+    "negative": 72,
+    "reviewer_count": 1,
+    "adjudicated": false
+  },
+  "split_cases": {
+    "train": [
+      "instagram-02",
+      "telegram-01",
+      "telegram-02",
+      "twitter-01",
+      "twitter-02",
+      "twitter-05"
+    ],
+    "validation": [
+      "instagram-03",
+      "telegram-04",
+      "twitter-03"
+    ],
+    "test": [
+      "instagram-04",
+      "telegram-03",
+      "twitter-04"
+    ]
+  },
+  "split_pairs": {
+    "train": 36,
+    "validation": 18,
+    "test": 18
+  },
+  "baseline_validation": {
+    "farstail": {
+      "accuracy": 0.8607677293428757,
+      "errors": 214,
+      "confusion_matrix": [
+        [
+          474,
+          25,
+          16
+        ],
+        [
+          76,
+          373,
+          50
+        ],
+        [
+          23,
+          24,
+          476
+        ]
+      ],
+      "matrix_order": [
+        "entailment",
+        "contradiction",
+        "neutral"
+      ],
+      "per_class": {
+        "entailment": {
+          "precision": 0.8272251308900523,
+          "recall": 0.920388349514563,
+          "f1": 0.8713235294117646,
+          "support": 515
+        },
+        "contradiction": {
+          "precision": 0.8838862559241706,
+          "recall": 0.7474949899799599,
+          "f1": 0.8099891422366992,
+          "support": 499
+        },
+        "neutral": {
+          "precision": 0.8782287822878229,
+          "recall": 0.9101338432122371,
+          "f1": 0.8938967136150234,
+          "support": 523
+        }
+      }
+    },
+    "human": {
+      "n": 18,
+      "tp": 0,
+      "tn": 17,
+      "fp": 1,
+      "fn": 0,
+      "accuracy": 0.9444444444444444,
+      "precision": 0.0,
+      "recall": null,
+      "f1": 0.0,
+      "wilson_95_percent": [
+        0.7424269921812741,
+        0.990124809021697
+      ],
+      "negative_loss": 0.473929762840271,
+      "negative_only": true
+    },
+    "human_negative_loss": 0.473929762840271
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "mean_loss": 0.7129782997071743,
+      "validation": {
+        "farstail": {
+          "accuracy": 0.8568640208197787,
+          "errors": 220,
+          "confusion_matrix": [
+            [
+              456,
+              37,
+              22
+            ],
+            [
+              65,
+              379,
+              55
+            ],
+            [
+              18,
+              23,
+              482
+            ]
+          ],
+          "matrix_order": [
+            "entailment",
+            "contradiction",
+            "neutral"
+          ],
+          "per_class": {
+            "entailment": {
+              "precision": 0.8460111317254174,
+              "recall": 0.8854368932038835,
+              "f1": 0.8652751423149906,
+              "support": 515
+            },
+            "contradiction": {
+              "precision": 0.8633257403189066,
+              "recall": 0.7595190380761523,
+              "f1": 0.8081023454157784,
+              "support": 499
+            },
+            "neutral": {
+              "precision": 0.8622540250447227,
+              "recall": 0.9216061185468452,
+              "f1": 0.8909426987060999,
+              "support": 523
+            }
+          }
+        },
+        "human": {
+          "n": 18,
+          "tp": 0,
+          "tn": 18,
+          "fp": 0,
+          "fn": 0,
+          "accuracy": 1.0,
+          "precision": null,
+          "recall": null,
+          "f1": null,
+          "wilson_95_percent": [
+            0.8241207763533425,
+            1.0
+          ],
+          "negative_loss": 0.4126323461532593,
+          "negative_only": true
+        },
+        "human_negative_loss": 0.4126323461532593
+      },
+      "eligible": true
+    },
+    {
+      "epoch": 2,
+      "mean_loss": 0.6138248451614893,
+      "validation": {
+        "farstail": {
+          "accuracy": 0.8575146389069617,
+          "errors": 219,
+          "confusion_matrix": [
+            [
+              453,
+              40,
+              22
+            ],
+            [
+              62,
+              382,
+              55
+            ],
+            [
+              16,
+              24,
+              483
+            ]
+          ],
+          "matrix_order": [
+            "entailment",
+            "contradiction",
+            "neutral"
+          ],
+          "per_class": {
+            "entailment": {
+              "precision": 0.8531073446327684,
+              "recall": 0.8796116504854369,
+              "f1": 0.8661567877629063,
+              "support": 515
+            },
+            "contradiction": {
+              "precision": 0.8565022421524664,
+              "recall": 0.7655310621242485,
+              "f1": 0.8084656084656084,
+              "support": 499
+            },
+            "neutral": {
+              "precision": 0.8625,
+              "recall": 0.9235181644359465,
+              "f1": 0.8919667590027701,
+              "support": 523
+            }
+          }
+        },
+        "human": {
+          "n": 18,
+          "tp": 0,
+          "tn": 18,
+          "fp": 0,
+          "fn": 0,
+          "accuracy": 1.0,
+          "precision": null,
+          "recall": null,
+          "f1": null,
+          "wilson_95_percent": [
+            0.8241207763533425,
+            1.0
+          ],
+          "negative_loss": 0.38074684143066406,
+          "negative_only": true
+        },
+        "human_negative_loss": 0.38074684143066406
+      },
+      "eligible": true
+    },
+    {
+      "epoch": 3,
+      "mean_loss": 0.5870383514832425,
+      "validation": {
+        "farstail": {
+          "accuracy": 0.8549121665582303,
+          "errors": 223,
+          "confusion_matrix": [
+            [
+              449,
+              44,
+              22
+            ],
+            [
+              62,
+              382,
+              55
+            ],
+            [
+              16,
+              24,
+              483
+            ]
+          ],
+          "matrix_order": [
+            "entailment",
+            "contradiction",
+            "neutral"
+          ],
+          "per_class": {
+            "entailment": {
+              "precision": 0.8519924098671727,
+              "recall": 0.8718446601941747,
+              "f1": 0.8618042226487523,
+              "support": 515
+            },
+            "contradiction": {
+              "precision": 0.8488888888888889,
+              "recall": 0.7655310621242485,
+              "f1": 0.8050579557428873,
+              "support": 499
+            },
+            "neutral": {
+              "precision": 0.8625,
+              "recall": 0.9235181644359465,
+              "f1": 0.8919667590027701,
+              "support": 523
+            }
+          }
+        },
+        "human": {
+          "n": 18,
+          "tp": 0,
+          "tn": 18,
+          "fp": 0,
+          "fn": 0,
+          "accuracy": 1.0,
+          "precision": null,
+          "recall": null,
+          "f1": null,
+          "wilson_95_percent": [
+            0.8241207763533425,
+            1.0
+          ],
+          "negative_loss": 0.37799808382987976,
+          "negative_only": true
+        },
+        "human_negative_loss": 0.37799808382987976
+      },
+      "eligible": false
+    }
+  ],
+  "selected_epoch": 2,
+  "eligible_for_promotion": true,
+  "limitations": [
+    "One provisional reviewer, negative human examples only; uncertain pairs excluded.",
+    "This feedback set is no longer an untouched organizational acceptance set.",
+    "Human test users are held out of gradient updates and epoch selection.",
+    "Positive controls come from FarsTail, not independently labeled social-media contradictions.",
+    "FarsTail test was inspected in earlier project work; this is a regression benchmark, not independent social-media acceptance."
+  ],
+  "trainable_parameters": 7680771,
+  "test": {
+    "farstail": {
+      "accuracy": 0.8695652173913043,
+      "errors": 204,
+      "confusion_matrix": [
+        [
+          472,
+          33,
+          14
+        ],
+        [
+          65,
+          399,
+          46
+        ],
+        [
+          16,
+          30,
+          489
+        ]
+      ],
+      "matrix_order": [
+        "entailment",
+        "contradiction",
+        "neutral"
+      ],
+      "per_class": {
+        "entailment": {
+          "precision": 0.8535262206148282,
+          "recall": 0.9094412331406551,
+          "f1": 0.8805970149253731,
+          "support": 519
+        },
+        "contradiction": {
+          "precision": 0.8636363636363636,
+          "recall": 0.7823529411764706,
+          "f1": 0.8209876543209876,
+          "support": 510
+        },
+        "neutral": {
+          "precision": 0.8907103825136612,
+          "recall": 0.914018691588785,
+          "f1": 0.9022140221402214,
+          "support": 535
+        }
+      }
+    },
+    "n": 1564,
+    "correct": 1360,
+    "data_sha256": "d0dd25408036e5dd8587a8e0d98585b46b4a7d0057fece0992fb8d490ad44f4f",
+    "runtime_seconds": 175.323,
+    "human_baseline": {
+      "n": 18,
+      "tp": 0,
+      "tn": 17,
+      "fp": 1,
+      "fn": 0,
+      "accuracy": 0.9444444444444444,
+      "precision": 0.0,
+      "recall": null,
+      "f1": 0.0,
+      "wilson_95_percent": [
+        0.7424269921812741,
+        0.990124809021697
+      ],
+      "negative_loss": 0.22077427804470062,
+      "negative_only": true
+    },
+    "human_candidate": {
+      "n": 18,
+      "tp": 0,
+      "tn": 18,
+      "fp": 0,
+      "fn": 0,
+      "accuracy": 1.0,
+      "precision": null,
+      "recall": null,
+      "f1": null,
+      "wilson_95_percent": [
+        0.8241207763533425,
+        1.0
+      ],
+      "negative_loss": 0.16892090439796448,
+      "negative_only": true
+    }
+  },
+  "promotion_gates": {
+    "farstail_accuracy_85": true,
+    "contradiction_f1_preserved": true,
+    "human_test_false_positives_not_increased": true,
+    "human_test_loss_improved": true
+  },
+  "candidate_model_sha256": "9a39b50f7c25e980106f3102deb62f14e786cc795b678649854d0838ed7fcf1f",
+  "human_all_baseline": {
+    "n": 72,
+    "tp": 0,
+    "tn": 69,
+    "fp": 3,
+    "fn": 0,
+    "accuracy": 0.9583333333333334,
+    "precision": 0.0,
+    "recall": null,
+    "f1": 0.0,
+    "wilson_95_percent": [
+      0.8845072325868389,
+      0.9857291925330748
+    ],
+    "negative_loss": 0.27651751041412354,
+    "negative_only": true
+  },
+  "human_all_candidate": {
+    "n": 72,
+    "tp": 0,
+    "tn": 71,
+    "fp": 1,
+    "fn": 0,
+    "accuracy": 0.9861111111111112,
+    "precision": 0.0,
+    "recall": null,
+    "f1": 0.0,
+    "wilson_95_percent": [
+      0.9254339785252386,
+      0.9975440481170943
+    ],
+    "negative_loss": 0.21790412068367004,
+    "negative_only": true
+  },
+  "training_did_not_modify_production": true,
+  "local_promotion": {
+    "release_id": "farstail-human-feedback-20261103-v1",
+    "verified": true,
+    "manifest_sha256": "1de877921830a7d9385e66affc9d7efdf3411172bf149c03765227c3d659f786",
+    "local_release_updated": true,
+    "server_deployed": false,
+    "candidate_model_sha256": "9a39b50f7c25e980106f3102deb62f14e786cc795b678649854d0838ed7fcf1f",
+    "load_dtype": "float32"
+  },
+  "runtime": {
+    "python": "3.10.0",
+    "torch": "2.14.0",
+    "transformers": "5.16.1",
+    "threads": 4,
+    "device": "cpu"
+  },
+  "original_training_report_sha256": "e9a03d141ebeefcf463262b9424a41943db57ccdb1de298af0475bd50af54371",
+  "runtime_parameter_parity": {
+    "all_parameter_values_identical_to_evaluated_checkpoint": true,
+    "state_tensor_count": 202,
+    "dtypes": {
+      "torch.float32": 202
+    },
+    "config_equivalent": true,
+    "tokenizer_pairs_equivalent": 1654,
+    "manifest_sha256": "1de877921830a7d9385e66affc9d7efdf3411172bf149c03765227c3d659f786",
+    "model_sha256": "9a39b50f7c25e980106f3102deb62f14e786cc795b678649854d0838ed7fcf1f"
+  }
+}

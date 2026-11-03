@@ -1,0 +1,7 @@
+{
+  "server": "kong/3.8.0",
+  "x-kong-upstream-latency": "552",
+  "x-kong-proxy-latency": "1",
+  "via": "1.1 kong/3.8.0",
+  "x-kong-request-id": "26a87266ff85ae4d3d0645628aea3654"
+}

@@ -14,6 +14,7 @@ from src.models.release import file_sha256, verify_model_release
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evaluate", action="store_true", help="Run the full FarsTail test before writing release.json")
+    parser.add_argument("--release-id", help="Explicit identity for a new release; otherwise preserve the current identity")
     args = parser.parse_args()
     model_root = ROOT / "models"
     bundle_dir = model_root / "saved/best_model"
@@ -29,6 +30,8 @@ def main():
 
     torch.set_num_threads(4)
     bundle_path = bundle_dir / "inference_config.json"
+    manifest_path = model_root / "release.json"
+    previous = json.loads(manifest_path.read_text()) if manifest_path.is_file() else {}
     bundle = json.loads(bundle_path.read_text())
     paths = [bundle_path]
     for member in bundle["members"]:
@@ -51,7 +54,7 @@ def main():
     if result["accuracy"] < .85:
         raise RuntimeError("Refusing to publish a release below the 85% FarsTail target")
     payload = {
-        "version": 1, "release_id": "farstail-ensemble-8593-v1", "bundle": "saved/best_model",
+        "version": 1, "release_id": args.release_id or previous.get("release_id") or "farstail-ensemble-v1", "bundle": "saved/best_model",
         "created_at": datetime.now(timezone.utc).isoformat(), "files": files,
         "evaluation": {"dataset": "FarsTail", "split": "test", "scope": "three_class_nli_on_labeled_pairs",
                        "n": len(pairs), "correct": int((gold == pred).sum()),
@@ -61,6 +64,9 @@ def main():
                        "test_data_sha256": file_sha256(ROOT / "data/raw/farstail/test.csv"),
                        "limitation": "The test was inspected in earlier project work; this result is not an independent social-media acceptance evaluation."},
     }
+    for key in ("feedback", "previous_release_id"):
+        if key in previous:
+            payload[key] = previous[key]
     (model_root / "release.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
     print(json.dumps(verify_model_release(bundle_dir), indent=2), flush=True)
 

@@ -1,0 +1,25 @@
+{
+  "completed_at_utc": "2026-11-01T08:17:45.715195+00:00",
+  "scope": "bounded_operational_checks_not_full_workload_acceptance",
+  "selection": {
+    "twitter": [
+      "twitter-01",
+      "twitter-05"
+    ],
+    "telegram": [
+      "telegram-02",
+      "telegram-04"
+    ],
+    "instagram": [
+      "instagram-02",
+      "instagram-03"
+    ]
+  },
+  "cases_sha256": "51776f850171bff9db0b98e18bdf71b556e55087c74d07f0408b118fe71655bc",
+  "model_manifest_sha256": "ce9cd029e136f31d195edf26c2c0e8951f5cbf8aa645b3c5c103245298789da1",
+  "checks": 28,
+  "passed": 25,
+  "failed": 3,
+  "full_workload_status": "blocked_by_gateway_504_at_60_seconds",
+  "human_accuracy_status": "awaiting_independent_human_labels"
+}

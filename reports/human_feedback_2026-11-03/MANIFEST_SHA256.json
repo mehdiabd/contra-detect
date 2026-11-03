@@ -1,0 +1,9 @@
+{
+  "README_FA.md": "10b2aad6cdf3fb5ff9743e064fbd1a0d58e1509e56eaac7156fc2c2aea08f834",
+  "promotion_report.json": "5cc38739c88122f7fa874365276f322cca871bb0ca3103c31da0a07e9e8d4b68",
+  "reviewer_1_baseline_metrics.json": "68c2cabe045279e2397a97344d6c897883552f418a6b290a5f3d0ed8cfec88fe",
+  "runtime_parameter_parity.json": "c9ce4eeba81610de5f17540ae509f5711c3d0663f4a4c0a922979c57ed361191",
+  "shipped_bundle_smoke.json": "f60410376cbc8764ab80d4c91eaaa65378dca0ac547797bbf54c9e400c36e652",
+  "training_report.json": "4e8b4e725644d7d886f585d1795764fcc380f973237c558bdec0627512050373",
+  "unit_checks.json": "97aa300143b76ca0f378be3020a05da5fdb3f6f295ca1ca097a6e68b595681a0"
+}

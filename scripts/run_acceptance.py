@@ -24,6 +24,7 @@ from src.api.schemas import (
     ScoreResult,
 )
 from src.data.schema import Post
+from src.data.errors import DataSourceError
 from src.features.candidates import CandidateBuilder
 
 ENDPOINTS = {
@@ -31,6 +32,10 @@ ENDPOINTS = {
     "contradictory-posts": ContradictoryPostsResult,
     "contradiction-score": ScoreResult,
 }
+
+
+class GatewayTimeoutError(RuntimeError):
+    """Stop submitting work when the gateway has stopped waiting for a response."""
 
 
 def fingerprint(value: object) -> str:
@@ -125,8 +130,14 @@ def verify_sources(cases: list[dict], discovery: dict) -> list[dict]:
 
 
 class AcceptanceRun:
-    def __init__(self, base_url: str, output: Path, private: Path):
+    def __init__(self, base_url: str, output: Path, private: Path, request_timeout: float = 180,
+                 refresh_source_reference: bool = False):
+        if request_timeout <= 0:
+            raise ValueError("Request timeout must be positive.")
         self.base_url = base_url.rstrip("/")
+        self.request_timeout = request_timeout
+        self.refresh_source_reference = refresh_source_reference
+        self.source_reference = {}
         self.output, self.private = output, private
         self.session = requests.Session()
         self.checks = []
@@ -142,7 +153,7 @@ class AcceptanceRun:
         errors = []
         status = None
         try:
-            response = self.session.post(f"{self.base_url}/api/v1/users/{endpoint}", json=body, timeout=180)
+            response = self.session.post(f"{self.base_url}/api/v1/users/{endpoint}", json=body, timeout=self.request_timeout)
             status = response.status_code
             payload = response.json()
             if status != expected_status:
@@ -168,11 +179,47 @@ class AcceptanceRun:
         self.receipts.append({"check": name, "request": body, "status": status, "response": payload})
         self.save()
         print(json.dumps({k: row[k] for k in ("name", "passed", "errors", "seconds")}), flush=True)
+        if status == 504:
+            raise GatewayTimeoutError("Gateway timed out; remaining requests were not submitted.")
         return payload if parsed_ok else None
 
     def save(self):
         (self.output / "checks.json").write_text(json.dumps(self.checks, ensure_ascii=False, indent=2))
         (self.private / "api_receipts.json").write_text(json.dumps(self.receipts, ensure_ascii=False, indent=2))
+
+    def current_source_case(self, case: dict) -> dict:
+        if not self.refresh_source_reference:
+            return case
+        from src.data import elastic
+
+        dates = case["date_range"]
+        posts = elastic.fetch_posts(
+            [case["user_id"]], platforms=[case["platform"]],
+            start_date=date.fromisoformat(dates["start_date"]), end_date=date.fromisoformat(dates["end_date"]),
+        )
+        current = {**case, "source_posts": [post.to_dict() for post in posts]}
+        self.source_reference[case["case_id"]] = current
+        (self.private / "source_reference.json").write_text(json.dumps(self.source_reference, ensure_ascii=False, indent=2))
+        return current
+
+    def summarize(self, cases: list[dict], completed: bool, stopped_reason: str | None = None) -> dict:
+        spec = json.loads((self.output / "openapi.json").read_text())
+        release = json.loads((self.output / "health.json").read_text()).get("model", {}).get("release", {})
+        summary = {
+            "completed_at_utc": datetime.now(timezone.utc).isoformat(), "api_url": self.base_url,
+            "api_version": spec["info"]["version"], "release_id": release.get("release_id"),
+            "manifest_sha256": release.get("manifest_sha256"), "cases_sha256": fingerprint(cases),
+            "completed": completed, "stopped_reason": stopped_reason, "request_timeout_seconds": self.request_timeout,
+            "source_reference_mode": "refreshed_independent_reads" if self.refresh_source_reference else "frozen_snapshot",
+            "source_reference_sha256": fingerprint(self.source_reference) if self.source_reference else None,
+            "checks": len(self.checks), "passed": sum(c["passed"] for c in self.checks),
+            "failed": sum(not c["passed"] for c in self.checks),
+            "accuracy_status": "awaiting_independent_human_labels",
+            "scope": "operational_checks_and_frozen_social_media_pilot_not_organizational_acceptance",
+        }
+        (self.output / "summary.json").write_text(json.dumps(summary, indent=2))
+        print(json.dumps(summary), flush=True)
+        return summary
 
     def run(self, cases: list[dict]):
         response = self.session.get(f"{self.base_url}/health", timeout=60)
@@ -194,7 +241,7 @@ class AcceptanceRun:
         for platform in ("twitter", "telegram", "instagram"):
             platform_cases = [c for c in cases if c["platform"] == platform]
             # The same fixed first two sampled users are checked individually and as a list.
-            chosen = platform_cases[:2]
+            chosen = [self.current_source_case(case) for case in platform_cases[:2]]
             for group_name, group in (("single", chosen[:1]), ("multi", chosen)):
                 body = {"user_ids": [c["user_id"] for c in group], "platform_name": platform,
                         "date_range": group[0]["date_range"]}
@@ -235,18 +282,7 @@ class AcceptanceRun:
         self.checks.append({"name": "release_unchanged_during_run", "passed":
                             release.get("manifest_sha256") == final_health.get("model", {}).get("release", {}).get("manifest_sha256")})
         self.save()
-        summary = {
-            "completed_at_utc": datetime.now(timezone.utc).isoformat(), "api_url": self.base_url,
-            "api_version": spec["info"]["version"], "release_id": release.get("release_id"),
-            "manifest_sha256": release.get("manifest_sha256"), "cases_sha256": fingerprint(cases),
-            "checks": len(self.checks), "passed": sum(c["passed"] for c in self.checks),
-            "failed": sum(not c["passed"] for c in self.checks),
-            "accuracy_status": "awaiting_independent_human_labels",
-            "scope": "operational_checks_and_frozen_social_media_pilot_not_organizational_acceptance",
-        }
-        (self.output / "summary.json").write_text(json.dumps(summary, indent=2))
-        print(json.dumps(summary), flush=True)
-        return summary
+        return self.summarize(cases, completed=True)
 
 
 def main():
@@ -255,6 +291,9 @@ def main():
     parser.add_argument("--cases", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--private", type=Path, required=True)
+    parser.add_argument("--request-timeout", type=float, default=180, help="Client read timeout in seconds")
+    parser.add_argument("--refresh-source-reference", action="store_true",
+                        help="Read each source user independently without changing the blind review snapshot")
     parser.add_argument("--source-only", action="store_true", help="Verify the local reader against live Elasticsearch")
     parser.add_argument("--discovery", type=Path, help="Frozen discovery pool, required with --source-only")
     args = parser.parse_args()
@@ -267,8 +306,18 @@ def main():
         (args.output / "fixed_source_checks.json").write_text(json.dumps(checks, indent=2))
         print(json.dumps(checks, indent=2))
         return int(any(not row["passed"] for row in checks))
-    summary = AcceptanceRun(args.base_url, args.output, args.private).run(cases)
-    return int(summary["failed"] > 0)
+    try:
+        run = AcceptanceRun(args.base_url, args.output, args.private, request_timeout=args.request_timeout,
+                            refresh_source_reference=args.refresh_source_reference)
+    except ValueError as error:
+        parser.error(str(error))
+    try:
+        summary = run.run(cases)
+    except GatewayTimeoutError:
+        summary = run.summarize(cases, completed=False, stopped_reason="gateway_http_504")
+    except DataSourceError:
+        summary = run.summarize(cases, completed=False, stopped_reason="source_reference_unavailable")
+    return int(summary["failed"] > 0 or not summary["completed"])
 
 
 if __name__ == "__main__":

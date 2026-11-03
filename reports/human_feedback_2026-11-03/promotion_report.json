@@ -1,0 +1,9 @@
+{
+  "release_id": "farstail-human-feedback-20261103-v1",
+  "verified": true,
+  "manifest_sha256": "1de877921830a7d9385e66affc9d7efdf3411172bf149c03765227c3d659f786",
+  "local_release_updated": true,
+  "server_deployed": false,
+  "candidate_model_sha256": "9a39b50f7c25e980106f3102deb62f14e786cc795b678649854d0838ed7fcf1f",
+  "load_dtype": "float32"
+}

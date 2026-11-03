@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "release_id": "farstail-ensemble-8593-v1",
+  "release_id": "farstail-human-feedback-20261103-v1",
   "bundle": "saved/best_model",
-  "created_at": "2026-10-20T06:39:34.520185+00:00",
+  "created_at": "2026-11-03T07:02:26.548407+00:00",
   "files": {
     "saved/best_model/inference_config.json": {
       "bytes": 454,
@@ -41,12 +41,12 @@
       "sha256": "66ef102fd94116e6b07cd9cc65113acaa74400fb1c7d3a813c5ac28dba22d72d"
     },
     "saved/mdeberta_nli/config.json": {
-      "bytes": 1093,
-      "sha256": "bc7b85f164a17c1b007d87fb99d3676f4a4d2e6511d2288dd3f5334dc0f34e6b"
+      "bytes": 1087,
+      "sha256": "0fb665d8ef02bb3d0645e54fe0ff65d6533faff7cbd84ab286613e57beca3f8b"
     },
     "saved/mdeberta_nli/model.safetensors": {
-      "bytes": 557652046,
-      "sha256": "7c8e29f1115986d032e92b0fbaa0bdef1062a46f658b08705f237c05014a8541"
+      "bytes": 1115271284,
+      "sha256": "9a39b50f7c25e980106f3102deb62f14e786cc795b678649854d0838ed7fcf1f"
     },
     "saved/mdeberta_nli/tokenizer.json": {
       "bytes": 16316151,
@@ -70,43 +70,43 @@
     "split": "test",
     "scope": "three_class_nli_on_labeled_pairs",
     "n": 1564,
-    "correct": 1344,
-    "accuracy": 0.8593350383631714,
+    "correct": 1360,
+    "accuracy": 0.8695652173913043,
     "per_class": {
       "entailment": {
-        "precision": 0.8140703517587939,
-        "recall": 0.9364161849710982,
-        "f1": 0.8709677419354839,
+        "precision": 0.8535262206148282,
+        "recall": 0.9094412331406551,
+        "f1": 0.8805970149253731,
         "support": 519
       },
       "contradiction": {
-        "precision": 0.871264367816092,
-        "recall": 0.7431372549019608,
-        "f1": 0.8021164021164022,
+        "precision": 0.8636363636363636,
+        "recall": 0.7823529411764706,
+        "f1": 0.8209876543209876,
         "support": 510
       },
       "neutral": {
-        "precision": 0.900375939849624,
-        "recall": 0.8953271028037383,
-        "f1": 0.8978444236176195,
+        "precision": 0.8907103825136612,
+        "recall": 0.914018691588785,
+        "f1": 0.9022140221402214,
         "support": 535
       }
     },
     "confusion_matrix": [
       [
-        486,
-        23,
-        10
-      ],
-      [
-        88,
-        379,
-        43
-      ],
-      [
-        23,
+        472,
         33,
-        479
+        14
+      ],
+      [
+        65,
+        399,
+        46
+      ],
+      [
+        16,
+        30,
+        489
       ]
     ],
     "matrix_order": [
@@ -114,9 +114,29 @@
       "contradiction",
       "neutral"
     ],
-    "runtime_seconds": 158.729,
+    "runtime_seconds": 175.323,
     "device": "cpu",
     "test_data_sha256": "d0dd25408036e5dd8587a8e0d98585b46b4a7d0057fece0992fb8d490ad44f4f",
-    "limitation": "The test was inspected in earlier project work; this result is not an independent social-media acceptance evaluation."
-  }
+    "limitation": "Previously inspected FarsTail regression benchmark; provisional single-reviewer negative feedback is not independent social-media acceptance."
+  },
+  "feedback": {
+    "cases_sha256": "51776f850171bff9db0b98e18bdf71b556e55087c74d07f0408b118fe71655bc",
+    "review_sha256": "f4d8fcdc607b8d7919be062d276bcc439415619e397b1074b0233f9e1d10bbcb",
+    "annotated": 90,
+    "usable": 72,
+    "uncertain_excluded": 18,
+    "positive": 0,
+    "negative": 72,
+    "reviewer_count": 1,
+    "adjudicated": false,
+    "split_pairs": {
+      "train": 36,
+      "validation": 18,
+      "test": 18
+    },
+    "selected_epoch": 2,
+    "provisional": true,
+    "social_media_acceptance_complete": false
+  },
+  "previous_release_id": "farstail-ensemble-8593-v1"
 }
