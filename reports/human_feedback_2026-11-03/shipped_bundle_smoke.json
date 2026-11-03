@@ -1,0 +1,13 @@
+{
+  "release_id": "farstail-human-feedback-20261103-v1",
+  "verified": true,
+  "device": "cpu",
+  "result": {
+    "user_id": "guide_user",
+    "analysis_status": "completed",
+    "post_count": 2,
+    "pair_count": 1,
+    "has_contradiction": true,
+    "score": 0.6594
+  }
+}

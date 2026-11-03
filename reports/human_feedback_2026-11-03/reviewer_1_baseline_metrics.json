@@ -1,0 +1,158 @@
+{
+  "status": "awaiting_complete_adjudicated_labels_or_class_coverage",
+  "cases_sha256": "51776f850171bff9db0b98e18bdf71b556e55087c74d07f0408b118fe71655bc",
+  "reviewer": "reviewer_1",
+  "expected_pairs": 90,
+  "scored_pairs": 72,
+  "uncertain_pairs": 18,
+  "pair_metrics": {
+    "twitter": {
+      "n": 30,
+      "tp": 0,
+      "tn": 30,
+      "fp": 0,
+      "fn": 0,
+      "accuracy": 1.0,
+      "precision": null,
+      "recall": null,
+      "f1": null,
+      "wilson_95_percent": [
+        0.8864866068260312,
+        0.9999999999999999
+      ]
+    },
+    "telegram": {
+      "n": 24,
+      "tp": 0,
+      "tn": 23,
+      "fp": 1,
+      "fn": 0,
+      "accuracy": 0.9583333333333334,
+      "precision": 0.0,
+      "recall": null,
+      "f1": 0.0,
+      "wilson_95_percent": [
+        0.7975819352134406,
+        0.9926065438344942
+      ]
+    },
+    "instagram": {
+      "n": 18,
+      "tp": 0,
+      "tn": 16,
+      "fp": 2,
+      "fn": 0,
+      "accuracy": 0.8888888888888888,
+      "precision": 0.0,
+      "recall": null,
+      "f1": 0.0,
+      "wilson_95_percent": [
+        0.672002348698212,
+        0.9689804773543876
+      ]
+    },
+    "all": {
+      "n": 72,
+      "tp": 0,
+      "tn": 69,
+      "fp": 3,
+      "fn": 0,
+      "accuracy": 0.9583333333333334,
+      "precision": 0.0,
+      "recall": null,
+      "f1": 0.0,
+      "wilson_95_percent": [
+        0.8845072325868389,
+        0.9857291925330748
+      ]
+    }
+  },
+  "user_metrics": {
+    "twitter": {
+      "n": 5,
+      "tp": 0,
+      "tn": 5,
+      "fp": 0,
+      "fn": 0,
+      "accuracy": 1.0,
+      "precision": null,
+      "recall": null,
+      "f1": null,
+      "wilson_95_percent": [
+        0.5655175352168251,
+        1.0
+      ]
+    },
+    "telegram": {
+      "n": 4,
+      "tp": 0,
+      "tn": 3,
+      "fp": 1,
+      "fn": 0,
+      "accuracy": 0.75,
+      "precision": 0.0,
+      "recall": null,
+      "f1": 0.0,
+      "wilson_95_percent": [
+        0.30064184258240184,
+        0.9544127391902995
+      ]
+    },
+    "instagram": {
+      "n": 3,
+      "tp": 0,
+      "tn": 1,
+      "fp": 2,
+      "fn": 0,
+      "accuracy": 0.3333333333333333,
+      "precision": 0.0,
+      "recall": null,
+      "f1": 0.0,
+      "wilson_95_percent": [
+        0.06149194472039621,
+        0.7923403991979522
+      ]
+    },
+    "all": {
+      "n": 12,
+      "tp": 0,
+      "tn": 9,
+      "fp": 3,
+      "fn": 0,
+      "accuracy": 0.75,
+      "precision": 0.0,
+      "recall": null,
+      "f1": 0.0,
+      "wilson_95_percent": [
+        0.46769466506643426,
+        0.9110583316059453
+      ]
+    }
+  },
+  "proposed_accuracy_85_checks": {
+    "pairs": {
+      "twitter": true,
+      "telegram": true,
+      "instagram": true,
+      "all": true
+    },
+    "users": {
+      "twitter": true,
+      "telegram": false,
+      "instagram": false,
+      "all": false
+    }
+  },
+  "gold_contradictions_not_selected": 0,
+  "limitations": [
+    "Small recent-user pilot; not a representative random population sample.",
+    "Four-post windows only; no claim about a person's entire history.",
+    "Wilson intervals assume independent observations; pairs share users.",
+    "An accuracy target alone does not establish adequate contradiction recall.",
+    "Organizational approval and operational checks are separate requirements."
+  ],
+  "provisional": true,
+  "confirmed_positive_examples": 0,
+  "not_a_general_accuracy_or_recall_estimate": true,
+  "review_file_sha256": "945e845d1554ec4d6568342fee2791c7496a905c803543b7839b00e422735e5f"
+}

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>راهنمای کوتاه کار با سامانه تشخیص تناقض</title>
+  <style>
+    :root { color-scheme: light; font-family: Tahoma, Arial, sans-serif; color: #17212b; background: #f2f4f6; }
+    * { box-sizing: border-box; }
+    body { direction: rtl; text-align: right; max-width: 960px; margin: 28px auto; padding: 38px 46px; background: #fff; font-size: 14px; line-height: 1.95; }
+    h1, h2, h3 { color: #000; line-height: 1.65; break-after: avoid; }
+    h1 { font-size: 25px; margin: 0 0 6px; }
+    h2 { font-size: 19px; margin: 26px 0 10px; }
+    h3 { font-size: 15px; margin: 18px 0 8px; }
+    p { margin: 9px 0; }
+    .meta { color: #5b6470; font-size: 12px; }
+    a { color: #135b8b; text-underline-offset: 3px; }
+    ol, ul { margin: 8px 0; padding-inline-start: 24px; }
+    li { margin: 5px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12.5px; }
+    th, td { border: 1px solid #d9d9d9; padding: 8px 10px; text-align: right; vertical-align: middle; overflow-wrap: anywhere; }
+    th { background: #e9eef3; color: #000; }
+    tbody tr:nth-child(even) { background: #fafbfc; }
+    code, bdi[dir="ltr"] { direction: ltr; unicode-bidi: isolate; }
+    code { font-family: Menlo, Consolas, monospace; font-size: .9em; overflow-wrap: anywhere; }
+    pre { direction: ltr; text-align: left; unicode-bidi: isolate; background: #f6f7f8; border: 1px solid #d9d9d9; padding: 12px 15px; margin: 10px 0; overflow-x: auto; line-height: 1.7; }
+    pre code { white-space: pre; overflow-wrap: normal; }
+    summary { cursor: pointer; font-weight: bold; color: #000; }
+    details { margin: 14px 0; }
+    footer { margin-top: 22px; padding-top: 10px; border-top: 1px solid #d9d9d9; color: #5b6470; font-size: 12px; }
+    @media (max-width: 650px) {
+      body { margin: 0; padding: 22px 16px; }
+      h1 { font-size: 21px; }
+      table { font-size: 12px; }
+      th, td { padding: 7px; }
+    }
+    @media print {
+      @page { size: A4; margin: 14mm; }
+      :root, body { background: #fff; }
+      body { max-width: none; margin: 0; padding: 0; font-size: 10pt; line-height: 1.8; }
+      h1 { font-size: 18pt; } h2 { font-size: 13pt; margin-top: 17px; }
+      table { font-size: 9pt; } th, td { padding: 5px 7px; }
+      thead { display: table-header-group; } tr, pre { break-inside: avoid; }
+      pre { white-space: pre-wrap; overflow: visible; font-size: 9pt; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>راهنمای کوتاه کار با سامانه تشخیص تناقض</h1>
+    <p class="meta">برای کاربران و تحویل‌گیرندگان فنی · مطابق نسخهٔ <bdi dir="ltr">1.1.2</bdi> · به‌روزرسانی راهنما در ۱۲ آبان ۱۴۰۵</p>
+    <p>سامانه متن پست‌های <strong>یک کاربر در یک بستر</strong> را مقایسه می‌کند و وجود تناقض، جفت پست‌های متناقض و یک نشان‌گر عددی برمی‌گرداند. بسترهای ورودی ایکس، تلگرام و اینستاگرام هستند؛ ورودی تحلیل، متن است.</p>
+  </header>
+
+  <main>
+    <section aria-labelledby="processing">
+      <h2 id="processing">۱. پشت سامانه چه می‌گذرد</h2>
+      <ol>
+        <li><strong>دریافت:</strong> پست‌ها از منبع سازمان یا فیلد <code dir="ltr">posts</code> در درخواست خوانده و با کاربر، بستر و تاریخ فیلتر می‌شوند.</li>
+        <li><strong>انتخاب جفت:</strong> پس از پاک‌سازی برای انتخاب متن‌های هم‌موضوع، حداکثر ۸۰ جفت هر کاربر با شباهت واژگانی انتخاب می‌شود؛ همهٔ تاریخچه الزاماً بررسی نمی‌شود.</li>
+        <li><strong>پیش‌بینی:</strong> سه مدل رابطهٔ معنایی هر جفت را تأییدکننده، متناقض یا خنثی تشخیص می‌دهند. دو مدل فارسی هرکدام وزن ۲۵٪ و مدل چندزبانه وزن ۵۰٪ دارند.</li>
+        <li><strong>تجمیع:</strong> آستانهٔ تناقض جفت ۰٫۵۵ و آستانهٔ نشان‌گر کاربر ۰٫۵۰ است. اگر جفت قابل بررسی وجود نداشته باشد، نتیجه «دادهٔ ناکافی» است.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="usage">
+      <h2 id="usage">۲. درخواست بفرستید و نتیجه بگیرید</h2>
+      <ol>
+        <li><a href="https://contra-detect-api.stinascloud.ir/docs">مستندات تعاملی سامانه</a> را باز کنید و یکی از سه مسیر زیر را انتخاب کنید. روش هر سه <code dir="ltr">POST</code> و بدنهٔ درخواست آن‌ها یکسان است.</li>
+        <li>روی <bdi dir="ltr">Try it out</bdi> بزنید، بدنهٔ نمونه را جایگزین کنید و <bdi dir="ltr">Execute</bdi> را بزنید. نتیجه در بخش <bdi dir="ltr">Server response</bdi> دیده می‌شود.</li>
+      </ol>
+      <table>
+        <thead><tr><th scope="col">نتیجهٔ مورد نیاز</th><th scope="col">مسیر درخواست</th></tr></thead>
+        <tbody>
+          <tr><td>تشخیص وجود تناقض</td><td><code dir="ltr">/api/v1/users/contradiction</code></td></tr>
+          <tr><td>دریافت جفت پست‌ها به‌عنوان شاهد</td><td><code dir="ltr">/api/v1/users/contradictory-posts</code></td></tr>
+          <tr><td>دریافت نشان‌گر عددی</td><td><code dir="ltr">/api/v1/users/contradiction-score</code></td></tr>
+        </tbody>
+      </table>
+      <p><strong>برای دادهٔ سازمان:</strong> نام کاربری واقعیِ موجود در منبع را جایگزین <code dir="ltr">example_user</code> کنید؛ آدرس کامل پروفایل ننویسید. در <code dir="ltr">platform_name</code> یکی از مقادیر <code dir="ltr">twitter</code>، <code dir="ltr">telegram</code> یا <code dir="ltr">instagram</code> را بگذارید. تاریخ‌ها میلادی‌اند و ابتدا و انتهای بازه را شامل می‌شوند؛ حذف <code dir="ltr">date_range</code> مجاز است.</p>
+      <pre dir="ltr" aria-label="نمونه درخواست برای داده سازمان"><code id="source-request">{
+  "user_ids": ["example_user"],
+  "platform_name": "twitter",
+  "date_range": {
+    "start_date": "2026-10-01",
+    "end_date": "2026-10-20"
+  }
+}</code></pre>
+      <p>برای خواندن از منبع سازمان، <strong>فیلد <code dir="ltr">posts</code> را کاملاً حذف کنید</strong>؛ مقدار <code dir="ltr">posts: []</code> یعنی خودتان دادهٔ خالی فرستاده‌اید. چند شناسه در <code dir="ltr">user_ids</code> جداگانه تحلیل می‌شوند. فهرست خالی، حالت برترین‌هاست؛ با منبع سازمان، حداکثر ۱۰ نتیجه از میان حداکثر ۳۰ کاربر نامزد برمی‌گردد.</p>
+
+      <details>
+        <summary>نمونهٔ آماده برای آزمایش با دو متن دلخواه</summary>
+        <p>این بدنه را در مسیر تشخیص وارد کنید؛ دریافت داده از منبع سازمان لازم نیست. برای استفاده از بازهٔ تاریخ در این حالت، زمان <code dir="ltr">timestamp</code> را هم برای پست‌ها بفرستید.</p>
+        <pre dir="ltr" aria-label="نمونه درخواست با متن ارسالی"><code id="supplied-request">{
+  "user_ids": ["guide_user"],
+  "platform_name": "twitter",
+  "posts": [
+    {
+      "user_id": "guide_user",
+      "post_id": "a",
+      "text": "<bdi dir="rtl">من همیشه از تولید داخلی حمایت می‌کنم و خرید کالای ایرانی را ترجیح می‌دهم.</bdi>"
+    },
+    {
+      "user_id": "guide_user",
+      "post_id": "b",
+      "text": "<bdi dir="rtl">من هرگز از تولید داخلی حمایت نمی‌کنم و خرید کالای ایرانی را قبول ندارم.</bdi>"
+    }
+  ]
+}</code></pre>
+        <p>پاسخ این نمونه وضعیت <code dir="ltr">completed</code>، تصمیم <code dir="ltr">true</code> و یک جفت بررسی‌شده دارد.</p>
+      </details>
+    </section>
+
+    <section aria-labelledby="results">
+      <h2 id="results">۳. خروجی را درست بخوانید</h2>
+      <p>در پاسخ موفق، فهرست <code dir="ltr">results</code> را بخوانید. اول وضعیت <code dir="ltr">analysis_status</code> را ببینید، سپس تصمیم <code dir="ltr">has_contradiction</code> و امتیاز <code dir="ltr">score</code> را تفسیر کنید.</p>
+      <table>
+        <thead><tr><th scope="col">نشانهٔ پاسخ</th><th scope="col">معنی و اقدام</th></tr></thead>
+        <tbody>
+          <tr><td>وضعیت <code dir="ltr">completed</code> و تصمیم <code dir="ltr">true</code></td><td>در جفت‌های بررسی‌شده تناقض پیدا شده است؛ برای گزارش، شواهد را از مسیر استخراج بگیرید.</td></tr>
+          <tr><td>وضعیت <code dir="ltr">completed</code> و تصمیم <code dir="ltr">false</code></td><td>در جفت‌های بررسی‌شده تناقضی مطابق آستانه پیدا نشده است.</td></tr>
+          <tr><td>وضعیت <code dir="ltr">insufficient_data</code></td><td>جفت قابل بررسی وجود ندارد؛ تصمیم و امتیاز مربوط <code dir="ltr">null</code> هستند. تعداد پست‌ها، شناسه و بازهٔ تاریخ را بررسی کنید.</td></tr>
+          <tr><td>خطای ۵۰۳ با کد <code dir="ltr">data_source_unavailable</code></td><td>دریافت منبع خراب یا ناقص بوده؛ نتیجهٔ تحلیل وجود ندارد. اتصال و منبع داده را با پشتیبان بررسی کنید.</td></tr>
+          <tr><td>خطای ۵۰۳ با کد <code dir="ltr">analysis_failed</code></td><td>پردازش کامل نشده است؛ درخواست را به پشتیبان فنی گزارش کنید.</td></tr>
+          <tr><td>خطای ۴۲۲</td><td>ورودی نامعتبر است؛ بستر، قالب تاریخ یا ترتیب شروع و پایان را اصلاح کنید.</td></tr>
+        </tbody>
+      </table>
+      <p>فیلد <code dir="ltr">post_count</code> تعداد پست‌های پس از فیلتر و <code dir="ltr">pair_count</code> تعداد جفت‌های بررسی‌شده است. در شواهد، <code dir="ltr">post_a</code> و <code dir="ltr">post_b</code> متن، شناسه، بستر و زمان هر پست را دارند؛ <code dir="ltr">contradiction_score</code> امتیاز تناقض جفت و <code dir="ltr">similarity</code> شباهت واژگانی آن است.</p>
+      <p>نشان‌گر <code dir="ltr">score</code> بین صفر و یک است: میانگین امتیاز جفت‌های با امتیاز حداقل ۰٫۵۵؛ اگر چنین جفتی نباشد، یک‌چهارم بیشترین امتیاز برمی‌گردد. این نشان‌گر، احتمال قطعی تناقض فرد نیست. دقت ثبت‌شدهٔ ۸۶٫۹۶٪ مربوط به طبقه‌بندی جفت‌های آمادهٔ فارس‌تیل است؛ عملکرد کاربران واقعی باید روی دادهٔ سازمان سنجیده شود. بازخورد ارزیاب اول موقت است و نمونهٔ مثبت انسانیِ تأییدشده ندارد.</p>
+    </section>
+
+    <section aria-labelledby="handoff">
+      <h2 id="handoff">۴. راه‌اندازی و تحویل فنی</h2>
+      <p>برای نصب تازه، دسترسی مخزن، ابزار دریافت فایل‌های بزرگ گیت و داکر لازم است. فایل <code dir="ltr">.env</code> را با الگوی <code dir="ltr">.env.example</code> و تنظیمات تحویلی مسئول زیرساخت آماده کنید؛ برای دادهٔ سازمان، <code dir="ltr">ES_ENABLED=true</code> باشد. سپس در پوشهٔ پروژه اجرا کنید:</p>
+      <pre dir="ltr" aria-label="دستورهای راه‌اندازی"><code>git lfs install
+git lfs pull
+docker compose up -d --build</code></pre>
+      <p>برای اجرای سامانه، وزن‌های نهایی موجود استفاده می‌شوند و آموزش دوباره لازم نیست. در نصب محلی، مستندات در <code dir="ltr">http://localhost:8000/docs</code> قرار دارند. پس از مرج و بیلد این به‌روزرسانی، وضعیت <a href="https://contra-detect-api.stinascloud.ir/health">سلامت سرور</a> باید مدل <code dir="ltr">farstail-human-feedback-20261103-v1</code>، سه عضو و مقدار <code dir="ltr">model.release.verified=true</code> را نشان دهد؛ کنترل هش مدل هنگام ساخت و شروع سرویس انجام می‌شود.</p>
+      <p>برای مشاهدهٔ خطاهای اجرا، دستور <code dir="ltr">docker compose logs --tail=100 api</code> را اجرا کنید. در تحویل، نسخهٔ کد، تنظیمات منبع، دسترسی فایل‌های مدل و یک نمونه درخواست و پاسخ موفق را ثبت کنید.</p>
+    </section>
+  </main>
+
+  <footer>این راهنما مستقل است و بدون نصب ابزار اضافی در مرورگر باز می‌شود؛ برای نگهداری یا چاپ، از گزینهٔ چاپ مرورگر استفاده کنید.</footer>
+</body>
+</html>
